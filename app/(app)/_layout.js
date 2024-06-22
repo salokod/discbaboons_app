@@ -17,6 +17,7 @@ export default function _layout() {
           backgroundColor: "red",
         },
         headerTintColor: "white",
+        headerShown: false,
       }}
     >
       <Stack.Screen
