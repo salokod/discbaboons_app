@@ -10,7 +10,7 @@ export default function _layout() {
   const isDark = theme.theme.mode === "dark";
 
   return (
-    <Tabs screenOptions={{ headerLeft: () => <DrawerToggleButton tintColor={isDark ? "white" : "black"} />, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" } }}>
+    <Tabs screenOptions={{ headerLeft: () => <DrawerToggleButton tintColor={isDark ? "white" : "black"} />, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" }, tabBarStyle: { backgroundColor: isDark ? "black" : "white" }, tabBarActiveTintColor: isDark ? "#fe00f6" : "#fe00f6", tabBarInactiveTintColor: isDark ? "white" : "black" }}>
       <Tabs.Screen
         name="feed"
         options={{

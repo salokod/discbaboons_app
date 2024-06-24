@@ -63,19 +63,19 @@ const CustomDrawerContent = (props) => {
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <Ionicons name="toggle" size={size} color={pathname == "/settings" ? "#fff" : "#000"} />}
+        icon={({ color, size }) => <Ionicons name="toggle" size={size} color={pathname == "/toggle" ? "#fff" : "#000"} />}
         label={"Toggle Theme"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/settings" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/settings" ? "#333" : "#fff" }}
+        labelStyle={[styles.navItemLabel, { color: pathname == "/toggle" ? "#fff" : "#000" }]}
+        style={{ backgroundColor: pathname == "/toggle" ? "#333" : "#fff" }}
         onPress={() => {
           setMode(mode === "dark" ? "light" : "dark");
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <Ionicons name="log-out" size={size} color={pathname == "/settings" ? "#fff" : "#000"} />}
+        icon={({ color, size }) => <Ionicons name="log-out" size={size} color={pathname == "/logout" ? "#fff" : "#000"} />}
         label={"Logout"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/settings" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/settings" ? "#333" : "#fff" }}
+        labelStyle={[styles.navItemLabel, { color: pathname == "/logout" ? "#fff" : "#000" }]}
+        style={{ backgroundColor: pathname == "/logout" ? "#333" : "#fff" }}
         onPress={() => {
           isLoggedInFunc();
         }}
