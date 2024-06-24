@@ -5,9 +5,12 @@ import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { Feather, AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { router, usePathname } from "expo-router";
 import { DataContext } from "../../../context/DataContext";
+import { useThemeMode, useTheme } from "@rneui/themed";
 
 const CustomDrawerContent = (props) => {
   const { isLoggedInFunc } = useContext(DataContext);
+  const { mode, setMode } = useThemeMode();
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -60,6 +63,15 @@ const CustomDrawerContent = (props) => {
         }}
       />
       <DrawerItem
+        icon={({ color, size }) => <Ionicons name="toggle" size={size} color={pathname == "/settings" ? "#fff" : "#000"} />}
+        label={"Toggle Theme"}
+        labelStyle={[styles.navItemLabel, { color: pathname == "/settings" ? "#fff" : "#000" }]}
+        style={{ backgroundColor: pathname == "/settings" ? "#333" : "#fff" }}
+        onPress={() => {
+          setMode(mode === "dark" ? "light" : "dark");
+        }}
+      />
+      <DrawerItem
         icon={({ color, size }) => <Ionicons name="log-out" size={size} color={pathname == "/settings" ? "#fff" : "#000"} />}
         label={"Logout"}
         labelStyle={[styles.navItemLabel, { color: pathname == "/settings" ? "#fff" : "#000" }]}
@@ -73,8 +85,11 @@ const CustomDrawerContent = (props) => {
 };
 
 export default function Layout() {
+  const theme = useTheme();
+  const isDark = theme.theme.mode === "dark";
+
   return (
-    <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />} screenOptions={{ headerShown: false }}>
+    <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />} screenOptions={{ headerShown: false, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" }, headerTintColor: isDark ? "white" : "black" }}>
       <Drawer.Screen name="favourites" options={{ headerShown: true }} />
       <Drawer.Screen name="settings" options={{ headerShown: true }} />
     </Drawer>

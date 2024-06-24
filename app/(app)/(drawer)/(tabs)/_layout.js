@@ -1,12 +1,16 @@
-import { View, Text, Button } from "react-native";
-import React, { useContext } from "react";
+import { Button } from "react-native";
+import React from "react";
 import { Tabs, router } from "expo-router";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import { DrawerToggleButton } from "@react-navigation/drawer";
+import { useTheme } from "@rneui/themed";
 
 export default function _layout() {
+  const theme = useTheme();
+  const isDark = theme.theme.mode === "dark";
+
   return (
-    <Tabs screenOptions={{ headerLeft: () => <DrawerToggleButton tintColor="#000" /> }}>
+    <Tabs screenOptions={{ headerLeft: () => <DrawerToggleButton tintColor={isDark ? "white" : "black"} />, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" } }}>
       <Tabs.Screen
         name="feed"
         options={{

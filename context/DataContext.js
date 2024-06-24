@@ -7,8 +7,6 @@ export const DataProviderContext = ({ children }) => {
   const [testVar, setTestVar] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  console.log("this is the value of isLoggedIn from context: ", isLoggedIn);
-
   useEffect(() => {
     AsyncStorage.setItem("testVariable", JSON.stringify({ id: 1, hiMom: "hi" }));
 
@@ -17,9 +15,5 @@ export const DataProviderContext = ({ children }) => {
 
   const isLoggedInFunc = () => setIsLoggedIn(!isLoggedIn);
 
-  const testFunc = async () => {
-    console.log("this is test variable", await AsyncStorage.getItem("testVariable2"));
-  };
-
-  return <DataContext.Provider value={{ testVar, testFunc, isLoggedIn, isLoggedInFunc }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={{ isLoggedIn, isLoggedInFunc }}>{children}</DataContext.Provider>;
 };

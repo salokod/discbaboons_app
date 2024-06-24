@@ -6,7 +6,6 @@ import { DataContext } from "../../context/DataContext";
 export default function _layout() {
   const { isLoggedIn } = useContext(DataContext);
 
-  console.log("this is the value of isLoggedIn: ", isLoggedIn);
   if (!isLoggedIn) {
     return <Redirect href="/login" />;
   }
