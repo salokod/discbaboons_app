@@ -1,10 +1,17 @@
-import { View, Text, Button } from "react-native";
-import React, { useContext } from "react";
-import { Stack, router, Slot, Redirect } from "expo-router";
+import { Button } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { Stack, router, Redirect } from "expo-router";
 import { DataContext } from "../../context/DataContext";
+import { useThemeMode } from "@rneui/themed";
 
 export default function _layout() {
-  const { isLoggedIn } = useContext(DataContext);
+  const { isLoggedIn, savedTheme } = useContext(DataContext);
+  const { mode, setMode } = useThemeMode();
+
+  useEffect(() => {
+    setMode(savedTheme);
+    console.log("trying to set theme to", savedTheme);
+  }, [savedTheme]);
 
   if (!isLoggedIn) {
     return <Redirect href="/login" />;

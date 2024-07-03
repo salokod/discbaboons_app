@@ -1,42 +1,96 @@
-import { View, Text } from "react-native";
-import React, { useContext } from "react";
+import { View, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useContext, useState, useEffect } from "react";
 import { useRouter, Redirect } from "expo-router";
 import { DataContext } from "../context/DataContext";
-import { ThemeConsumer } from "@rneui/themed";
 import { Button } from "@rneui/base";
-import { useThemeMode } from "@rneui/themed";
+import { Image, useTheme, Input, Icon, useThemeMode } from "@rneui/themed";
+import { StatusBar } from "expo-status-bar";
+import { TouchableWithoutFeedback } from "react-native";
+import { useSnackBar } from "react-native-snackbar-hook";
 
 export default function Page() {
-  const { isLoggedInFunc, isLoggedIn } = useContext(DataContext);
+  const { isLoggedInFunc, isLoggedIn, savedTheme } = useContext(DataContext);
   const { mode, setMode } = useThemeMode();
+  const { showSnackBar } = useSnackBar();
+
+  const { theme, updateTheme } = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
-  const handleLogin = () => {
-    isLoggedInFunc();
-    router.push("/");
+  useEffect(() => {
+    setMode(savedTheme);
+  }, [savedTheme]);
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      const response = await isLoggedInFunc(username, passwordInput);
+      router.push("/");
+      showSnackBar("Welcome back, you baboon...", "success");
+
+      setLoading(false);
+    } catch (error) {
+      showSnackBar(error.response.data.message, "error");
+      setLoading(false);
+    }
   };
 
   if (isLoggedIn) {
-    console.log("this should fire");
     return <Redirect href="/" />;
   }
 
   return (
-    <ThemeConsumer>
-      {({ theme }) => (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontSize: 18 }}>Login Page</Text>
-          <Button
-            onPress={() => {
-              handleLogin();
-            }}
-            title="Login"
-            color={theme.colors.primary}
-          />
-          <Button onPress={() => setMode(mode === "dark" ? "light" : "dark")} title={mode} />
-        </View>
-      )}
-    </ThemeConsumer>
+    <>
+      <StatusBar style={theme.mode === "dark" ? "light" : "dark"} />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          <View style={{ flex: 1, justifyContent: "space-evenly", alignItems: "center", backgroundColor: theme.colors.background }}>
+            <Image
+              style={{
+                height: 200,
+                width: 200,
+              }}
+              source={require("../assets/spiro_logo_outline.png")}
+            />
+            <View style={{ width: "75%" }}>
+              <Input autoCapitalize="none" onChangeText={(value) => setUsername(value)} placeholder="username" leftIcon={<Icon name="user" color={theme.colors.primaryButton} type="font-awesome" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />
+              <Input autoCapitalize="none" onChangeText={(value) => setPasswordInput(value)} secureTextEntry={!showPassword} placeholder="password" leftIcon={<Icon name="password" color={theme.colors.primaryButton} type="MaterialIcons" size={25} style={{ paddingRight: 5, width: 35 }} />} rightIcon={<Icon name={showPassword ? "eye-off" : "eye"} color={theme.colors.primaryButton} type="ionicon" onPress={() => setShowPassword(!showPassword)} size={25} style={{ paddingRight: 5, width: 35 }} />} />
+            </View>
+            <View style={{ width: "50%" }}>
+              <Button
+                onPress={() => {
+                  handleLogin();
+                }}
+                title="Login"
+                disabled={loading || username.length < 3 || passwordInput.length < 8}
+                type="solid"
+                buttonStyle={{
+                  borderRadius: 30,
+                }}
+                color={theme.colors.primaryButton}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+      <View style={{ backgroundColor: theme.colors.background }}>
+        <Button
+          onPress={() => {
+            router.push("/register");
+          }}
+          title="New baboon? Sign up here!"
+          type="clear"
+          buttonStyle={{
+            borderRadius: 30,
+          }}
+          style={{ marginBottom: "20%" }}
+          titleStyle={{ color: theme.colors.secondaryButton, fontWeight: "bold" }}
+        />
+      </View>
+    </>
   );
 }

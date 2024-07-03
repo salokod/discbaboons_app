@@ -1,14 +1,21 @@
 import { Slot } from "expo-router";
 import { DataProviderContext } from "../context/DataContext";
 import { ThemeProvider, createTheme } from "@rneui/themed";
+import { SnackBarProvider } from "react-native-snackbar-hook";
 
 const theme = createTheme({
   lightColors: {
-    primary: "purple",
+    primary: "#36399a",
     secondary: "red",
+    font: "black",
+    primaryButton: "#36399a",
+    secondaryButton: "#ed008c",
   },
   darkColors: {
-    primary: "pink",
+    primary: "#36399a",
+    font: "white",
+    primaryButton: "#36399a",
+    secondaryButton: "#ed008c",
   },
   components: {
     Button: {
@@ -19,10 +26,13 @@ const theme = createTheme({
 
 export default function Root() {
   // Set up the auth context and render our layout inside of it.
+
   return (
     <DataProviderContext>
       <ThemeProvider theme={theme}>
-        <Slot />
+        <SnackBarProvider success={{ color: "#ed008c", duration: 2500 }} error={{ autoHide: true }} info={{ color: "#36399a" }}>
+          <Slot />
+        </SnackBarProvider>
       </ThemeProvider>
     </DataProviderContext>
   );

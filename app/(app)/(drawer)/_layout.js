@@ -6,9 +6,10 @@ import { Feather, AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons"
 import { router, usePathname } from "expo-router";
 import { DataContext } from "../../../context/DataContext";
 import { useThemeMode, useTheme } from "@rneui/themed";
+import { StatusBar } from "expo-status-bar";
 
 const CustomDrawerContent = (props) => {
-  const { isLoggedInFunc } = useContext(DataContext);
+  const { isLoggedInFunc, loggedOutFunc, toggedThemeContextFunc } = useContext(DataContext);
   const { mode, setMode } = useThemeMode();
 
   const pathname = usePathname();
@@ -17,8 +18,14 @@ const CustomDrawerContent = (props) => {
     console.log(pathname);
   }, [pathname]);
 
+  const toggleThemeFunc = () => {
+    setMode(mode === "dark" ? "light" : "dark");
+    toggedThemeContextFunc();
+  };
+
   return (
     <DrawerContentScrollView {...props}>
+      <StatusBar style={mode === "dark" ? "light" : "dark"} />
       <View style={styles.userInfoWrapper}>
         <Image source={{ uri: "https://randomuser.me/api/portraits/women/26.jpg" }} width={80} height={80} style={styles.userImg} />
         <View style={styles.userDetailsWrapper}>
@@ -68,7 +75,7 @@ const CustomDrawerContent = (props) => {
         labelStyle={[styles.navItemLabel, { color: pathname == "/toggle" ? "#fff" : "#000" }]}
         style={{ backgroundColor: pathname == "/toggle" ? "#333" : "#fff" }}
         onPress={() => {
-          setMode(mode === "dark" ? "light" : "dark");
+          toggleThemeFunc();
         }}
       />
       <DrawerItem
@@ -77,7 +84,7 @@ const CustomDrawerContent = (props) => {
         labelStyle={[styles.navItemLabel, { color: pathname == "/logout" ? "#fff" : "#000" }]}
         style={{ backgroundColor: pathname == "/logout" ? "#333" : "#fff" }}
         onPress={() => {
-          isLoggedInFunc();
+          loggedOutFunc();
         }}
       />
     </DrawerContentScrollView>
