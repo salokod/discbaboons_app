@@ -7,9 +7,10 @@ import { Image, useTheme, Input, Icon, useThemeMode, Text } from "@rneui/themed"
 import { StatusBar } from "expo-status-bar";
 import { TouchableWithoutFeedback } from "react-native";
 import validator from "validator";
+import { useSnackBar } from "react-native-snackbar-hook";
 
 export default function Page() {
-  const { isLoggedInFunc, isLoggedIn, savedTheme } = useContext(DataContext);
+  const { registeringFunc, isLoggedIn, savedTheme } = useContext(DataContext);
   const { mode, setMode } = useThemeMode();
 
   const { theme, updateTheme } = useTheme();
@@ -19,6 +20,8 @@ export default function Page() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { showSnackBar } = useSnackBar();
 
   const router = useRouter();
 
@@ -40,9 +43,19 @@ export default function Page() {
     setMode(savedTheme);
   }, [savedTheme]);
 
-  const handleLogin = () => {
-    isLoggedInFunc();
-    router.push("/");
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+      const response = await registeringFunc(username, password, email);
+      router.push("/");
+      showSnackBar(response.data.message, "success");
+
+      setLoading(false);
+    } catch (error) {
+      console.log("error", error);
+      showSnackBar(error.response.data.message, "error");
+      setLoading(false);
+    }
   };
 
   if (isLoggedIn) {
@@ -72,10 +85,10 @@ export default function Page() {
             <View style={{ width: "50%" }}>
               <Button
                 onPress={() => {
-                  handleLogin();
+                  handleRegister();
                 }}
                 title="Register"
-                disabled={!allValid}
+                disabled={loading || !allValid}
                 type="solid"
                 buttonStyle={{
                   borderRadius: 30,
@@ -89,7 +102,7 @@ export default function Page() {
       <View style={{ backgroundColor: theme.colors.background }}>
         <Button
           onPress={() => {
-            router.back();
+            router.push("/login");
           }}
           title="Back to login page, you baboon..."
           type="clear"

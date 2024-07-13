@@ -11,8 +11,32 @@ export const DataProviderContext = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [userRtToken, setUserRtToken] = useState(null);
   const [tokenTTL, setTokenTTL] = useState(null);
+  const [passwordResetCheck, setPasswordResetCheck] = useState(false);
 
-  const currentUnixTime = Math.floor(Date.now() / 1000);
+  const isTokenExpired = () => {
+    const currentUnixTime = Math.floor(Date.now() / 1000);
+    return currentUnixTime > tokenTTL;
+  };
+
+  // Higher-order function to wrap any function with token expiration check
+  const withTokenCheck = (fn) => {
+    return async (...args) => {
+      if (isTokenExpired()) {
+        console.log("Token has expired.");
+        // Handle the expired token case here
+        // For example, refresh the token or redirect to login
+        return;
+      }
+      // If the token is not expired, proceed to call the original function
+      return await fn(...args);
+    };
+  };
+
+  // Example usage with an async function that needs the token check
+  const fetchUserDataWrapped = withTokenCheck(async () => {
+    console.log("Fetching user data...");
+    // Your logic to fetch user data goes here
+  });
 
   useEffect(() => {
     AsyncStorage.getItem("loggedIn").then((loginstate) => {
@@ -68,10 +92,34 @@ export const DataProviderContext = ({ children }) => {
     setUserRtToken(null);
   };
 
+  const registeringFunc = async (username, password, email) => {
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/register`, { username: username, password: password, email: email });
+    setIsLoggedIn(true);
+    AsyncStorage.setItem("userToken", JSON.stringify(response.data.token));
+    AsyncStorage.setItem("userRtToken", JSON.stringify(response.data.rt));
+    AsyncStorage.setItem("tokenTTL", JSON.stringify(response.data.tokenTTL));
+    AsyncStorage.setItem("loggedIn", JSON.stringify(true));
+    return response;
+  };
+
+  const requestUsernameFunc = async (email) => {
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotuser`, { email: email });
+    return response;
+  };
+  const requestPasswordFunc = async (username) => {
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotpassword`, { username: username });
+    setPasswordResetCheck(true);
+    return response;
+  };
+
+  const swapPaswordCheckFunc = () => {
+    setPasswordResetCheck(false);
+  };
+
   const toggedThemeContextFunc = () => {
     setSavedTheme(savedTheme === "dark" ? "light" : "dark");
     AsyncStorage.setItem("savedTheme", JSON.stringify(savedTheme === "dark" ? "light" : "dark"));
   };
 
-  return <DataContext.Provider value={{ isLoggedIn, isLoggedInFunc, loggedOutFunc, toggedThemeContextFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={{ isLoggedIn, registeringFunc, passwordResetCheck, swapPaswordCheckFunc, isLoggedInFunc, loggedOutFunc, requestPasswordFunc, toggedThemeContextFunc, requestUsernameFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
 };

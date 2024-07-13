@@ -5,16 +5,20 @@ import { DataContext } from "../../context/DataContext";
 import { useThemeMode } from "@rneui/themed";
 
 export default function _layout() {
-  const { isLoggedIn, savedTheme } = useContext(DataContext);
+  const { isLoggedIn, savedTheme, passwordResetCheck } = useContext(DataContext);
   const { mode, setMode } = useThemeMode();
 
   useEffect(() => {
     setMode(savedTheme);
-    console.log("trying to set theme to", savedTheme);
   }, [savedTheme]);
 
+  console.log("reset check", isLoggedIn, passwordResetCheck);
   if (!isLoggedIn) {
-    return <Redirect href="/login" />;
+    if (passwordResetCheck) {
+      return <Redirect href="/passwordreset" />;
+    } else {
+      return <Redirect href="/login" />;
+    }
   }
   return (
     <Stack

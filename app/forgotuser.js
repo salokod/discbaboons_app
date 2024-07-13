@@ -3,35 +3,34 @@ import React, { useContext, useState, useEffect } from "react";
 import { useRouter, Redirect } from "expo-router";
 import { DataContext } from "../context/DataContext";
 import { Button } from "@rneui/base";
-import { Image, useTheme, Input, Icon, useThemeMode } from "@rneui/themed";
+import { Image, useTheme, Input, Icon, useThemeMode, Text } from "@rneui/themed";
 import { StatusBar } from "expo-status-bar";
 import { TouchableWithoutFeedback } from "react-native";
 import { useSnackBar } from "react-native-snackbar-hook";
+import validator from "validator";
 
 export default function Page() {
-  const { isLoggedInFunc, isLoggedIn, savedTheme } = useContext(DataContext);
-  const { mode, setMode } = useThemeMode();
+  const { requestUsernameFunc, isLoggedIn, savedTheme } = useContext(DataContext);
+  const { setMode } = useThemeMode();
   const { showSnackBar } = useSnackBar();
-
   const { theme, updateTheme } = useTheme();
-  const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  //validate email
+  const emailCheck = validator.isEmail(email);
 
   useEffect(() => {
     setMode(savedTheme);
   }, [savedTheme]);
 
-  const handleLogin = async () => {
+  const handleUserRequest = async () => {
     try {
       setLoading(true);
-      const response = await isLoggedInFunc(username, passwordInput);
-      router.push("/");
+      const response = await requestUsernameFunc(email);
       showSnackBar(response.data.message, "success");
-
       setLoading(false);
     } catch (error) {
       showSnackBar(error.response.data.message, "error");
@@ -56,17 +55,24 @@ export default function Page() {
               }}
               source={require("../assets/spiro_logo_outline.png")}
             />
+            <View style={{ justifyContent: "space-evenly", alignItems: "center", width: "70%" }}>
+              <Text style={{ marginBottom: 3 }} h4>
+                Forgot User
+              </Text>
+              <Text style={{ alignSelf: "center" }} h5>
+                Enter your email, you baboon...
+              </Text>
+            </View>
             <View style={{ width: "75%" }}>
-              <Input autoCapitalize="none" onChangeText={(value) => setUsername(value)} placeholder="username" leftIcon={<Icon name="user" color={theme.colors.primaryButton} type="font-awesome" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />
-              <Input autoCapitalize="none" onChangeText={(value) => setPasswordInput(value)} secureTextEntry={!showPassword} placeholder="password" leftIcon={<Icon name="password" color={theme.colors.primaryButton} type="MaterialIcons" size={25} style={{ paddingRight: 5, width: 35 }} />} rightIcon={<Icon name={showPassword ? "eye-off" : "eye"} color={theme.colors.primaryButton} type="ionicon" onPress={() => setShowPassword(!showPassword)} size={25} style={{ paddingRight: 5, width: 35 }} />} />
+              <Input autoCapitalize="none" onChangeText={(value) => setEmail(value)} placeholder="email" leftIcon={<Icon name="user" color={theme.colors.primaryButton} type="font-awesome" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />
             </View>
             <View style={{ width: "50%" }}>
               <Button
                 onPress={() => {
-                  handleLogin();
+                  handleUserRequest();
                 }}
-                title="Login"
-                disabled={loading || username.length < 3 || passwordInput.length < 8}
+                title="Request Username"
+                disabled={loading || !emailCheck}
                 type="solid"
                 buttonStyle={{
                   borderRadius: 30,
@@ -77,36 +83,12 @@ export default function Page() {
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
-      <View style={{ backgroundColor: theme.colors.background, justifyContent: "flex-start", flex: 0.35 }}>
+      <View style={{ backgroundColor: theme.colors.background, justifyContent: "flex-start", flex: 0.25 }}>
         <Button
           onPress={() => {
-            router.push("/forgotuser");
+            router.push("/login");
           }}
-          title="Forgot username?"
-          type="clear"
-          buttonStyle={{
-            borderRadius: 30,
-          }}
-          style={{ marginBottom: 10 }}
-          titleStyle={{ color: theme.colors.secondaryButton, fontWeight: "bold" }}
-        />
-        <Button
-          onPress={() => {
-            router.push("/forgotpass");
-          }}
-          title="Forgot password?"
-          type="clear"
-          buttonStyle={{
-            borderRadius: 30,
-          }}
-          style={{ marginBottom: 10 }}
-          titleStyle={{ color: theme.colors.secondaryButton, fontWeight: "bold" }}
-        />
-        <Button
-          onPress={() => {
-            router.push("/register");
-          }}
-          title="New baboon? Sign up here!"
+          title="Back to login..."
           type="clear"
           buttonStyle={{
             borderRadius: 30,
