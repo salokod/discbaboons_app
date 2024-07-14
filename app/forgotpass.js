@@ -9,7 +9,7 @@ import { TouchableWithoutFeedback } from "react-native";
 import { useSnackBar } from "react-native-snackbar-hook";
 
 export default function Page() {
-  const { requestPasswordFunc, isLoggedIn, savedTheme } = useContext(DataContext);
+  const { requestPasswordFunc, passwordResetCheck, isLoggedIn, savedTheme, passwordUrlUuid } = useContext(DataContext);
   const { setMode } = useThemeMode();
   const { showSnackBar } = useSnackBar();
 
@@ -22,6 +22,12 @@ export default function Page() {
   useEffect(() => {
     setMode(savedTheme);
   }, [savedTheme]);
+
+  useEffect(() => {
+    if (passwordResetCheck) {
+      router.push(`/passwordreset`);
+    }
+  }, [passwordResetCheck]);
 
   const handlePasswordRequest = async () => {
     console.log("Requesting password...");

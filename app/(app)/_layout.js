@@ -12,6 +12,10 @@ export default function _layout() {
     setMode(savedTheme);
   }, [savedTheme]);
 
+  useEffect(() => {
+    console.log("uef", passwordResetCheck);
+  }, [passwordResetCheck]);
+
   console.log("reset check", isLoggedIn, passwordResetCheck);
   if (!isLoggedIn) {
     if (passwordResetCheck) {

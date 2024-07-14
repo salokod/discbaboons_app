@@ -10,37 +10,28 @@ import { useSnackBar } from "react-native-snackbar-hook";
 import validator from "validator";
 
 export default function Page() {
-  const { requestUsernameFunc, isLoggedIn, savedTheme } = useContext(DataContext);
+  const { requestUsernameFunc, passwordResetTTL, passwordUrlUuid, isLoggedIn, savedTheme } = useContext(DataContext);
   const { setMode } = useThemeMode();
   const { showSnackBar } = useSnackBar();
   const { theme, updateTheme } = useTheme();
-  const [email, setEmail] = useState("");
+  const [passwordResetCode, setPasswordResetCode] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-
-  //validate email
-  const emailCheck = validator.isEmail(email);
 
   useEffect(() => {
     setMode(savedTheme);
   }, [savedTheme]);
 
   const handleUserRequest = async () => {
-    try {
-      setLoading(true);
-      const response = await requestUsernameFunc(email);
-      showSnackBar(response.data.message, "success");
-      setLoading(false);
-    } catch (error) {
-      showSnackBar(error.response.data.message, "error");
-      setLoading(false);
-    }
+    console.log("handle request here");
   };
 
   if (isLoggedIn) {
     return <Redirect href="/" />;
   }
+
+  const minutes = Math.floor((passwordResetTTL - Date.now() / 1000) / 60);
 
   return (
     <>
@@ -60,19 +51,19 @@ export default function Page() {
                 Password Reset
               </Text>
               <Text style={{ alignSelf: "center" }} h5>
-                Enter your email, you baboon...
+                Code sent to email. Expires in {minutes} minutes.
               </Text>
             </View>
             <View style={{ width: "75%" }}>
-              <Input autoCapitalize="none" onChangeText={(value) => setEmail(value)} placeholder="email" leftIcon={<Icon name="user" color={theme.colors.primaryButton} type="font-awesome" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />
+              <Input inputMode="numeric" autoCapitalize="none" onChangeText={(value) => setPasswordResetCode(value)} placeholder="reset code from email" leftIcon={<Icon name="password" color={theme.colors.primaryButton} type="MaterialIcons" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />
             </View>
             <View style={{ width: "50%" }}>
               <Button
                 onPress={() => {
                   handleUserRequest();
                 }}
-                title="Request Username"
-                disabled={loading || !emailCheck}
+                title="Reset Password"
+                disabled={loading}
                 type="solid"
                 buttonStyle={{
                   borderRadius: 30,

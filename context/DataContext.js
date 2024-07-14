@@ -12,6 +12,8 @@ export const DataProviderContext = ({ children }) => {
   const [userRtToken, setUserRtToken] = useState(null);
   const [tokenTTL, setTokenTTL] = useState(null);
   const [passwordResetCheck, setPasswordResetCheck] = useState(false);
+  const [passwordUrlUuid, setPasswordUrlUuid] = useState(null);
+  const [passwordResetTTL, setPasswordResetTTL] = useState(null);
 
   const isTokenExpired = () => {
     const currentUnixTime = Math.floor(Date.now() / 1000);
@@ -32,6 +34,15 @@ export const DataProviderContext = ({ children }) => {
     };
   };
 
+  if (passwordResetTTL !== null && passwordResetTTL < Date.now() / 1000) {
+    AsyncStorage.removeItem("passwordResetCheck");
+    AsyncStorage.removeItem("passwordUrlUuid");
+    AsyncStorage.removeItem("passwordResetTTL");
+    setPasswordResetCheck(false);
+    setPasswordUrlUuid(null);
+    setPasswordResetTTL(null);
+  }
+
   // Example usage with an async function that needs the token check
   const fetchUserDataWrapped = withTokenCheck(async () => {
     console.log("Fetching user data...");
@@ -47,6 +58,20 @@ export const DataProviderContext = ({ children }) => {
   useEffect(() => {
     AsyncStorage.getItem("savedTheme").then((theme) => {
       setSavedTheme(JSON.parse(theme));
+    });
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.getItem("passwordResetCheck").then((check) => {
+      setPasswordResetCheck(JSON.parse(check));
+    });
+
+    AsyncStorage.getItem("passwordUrlUuid").then((uuid) => {
+      setPasswordUrlUuid(JSON.parse(uuid));
+    });
+
+    AsyncStorage.getItem("passwordResetTTL").then((ttl) => {
+      setPasswordResetTTL(JSON.parse(ttl));
     });
   }, []);
 
@@ -108,7 +133,16 @@ export const DataProviderContext = ({ children }) => {
   };
   const requestPasswordFunc = async (username) => {
     const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotpassword`, { username: username });
+    const urlUuid = response.data.urlUuid;
+    // declare variable unix timestamp plus an hour
+    const ttl = Math.floor(Date.now() / 1000) + 3600;
+
+    AsyncStorage.setItem("passwordResetCheck", JSON.stringify(true));
+    AsyncStorage.setItem("passwordUrlUuid", JSON.stringify(urlUuid));
+    AsyncStorage.setItem("passwordResetTTL", JSON.stringify(ttl));
     setPasswordResetCheck(true);
+    setPasswordResetTTL(ttl);
+    setPasswordUrlUuid(urlUuid);
     return response;
   };
 
@@ -121,5 +155,5 @@ export const DataProviderContext = ({ children }) => {
     AsyncStorage.setItem("savedTheme", JSON.stringify(savedTheme === "dark" ? "light" : "dark"));
   };
 
-  return <DataContext.Provider value={{ isLoggedIn, registeringFunc, passwordResetCheck, swapPaswordCheckFunc, isLoggedInFunc, loggedOutFunc, requestPasswordFunc, toggedThemeContextFunc, requestUsernameFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={{ isLoggedIn, registeringFunc, passwordResetTTL, passwordUrlUuid, passwordResetCheck, swapPaswordCheckFunc, isLoggedInFunc, loggedOutFunc, requestPasswordFunc, toggedThemeContextFunc, requestUsernameFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
 };
