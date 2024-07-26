@@ -9,6 +9,7 @@ export const DataProviderContext = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [savedTheme, setSavedTheme] = useState(null);
   const [userToken, setUserToken] = useState(null);
+  const [resetCodeValidated, setResetCodeValidated] = useState(false);
   const [userRtToken, setUserRtToken] = useState(null);
   const [tokenTTL, setTokenTTL] = useState(null);
   const [passwordResetCheck, setPasswordResetCheck] = useState(false);
@@ -33,15 +34,6 @@ export const DataProviderContext = ({ children }) => {
       return await fn(...args);
     };
   };
-
-  if (passwordResetTTL !== null && passwordResetTTL < Date.now() / 1000) {
-    AsyncStorage.removeItem("passwordResetCheck");
-    AsyncStorage.removeItem("passwordUrlUuid");
-    AsyncStorage.removeItem("passwordResetTTL");
-    setPasswordResetCheck(false);
-    setPasswordUrlUuid(null);
-    setPasswordResetTTL(null);
-  }
 
   // Example usage with an async function that needs the token check
   const fetchUserDataWrapped = withTokenCheck(async () => {
@@ -95,6 +87,16 @@ export const DataProviderContext = ({ children }) => {
     }
   }, [isLoggedIn]);
 
+  const testFunc = () => {
+    console.log("this fired");
+    AsyncStorage.removeItem("passwordResetCheck");
+    AsyncStorage.removeItem("passwordUrlUuid");
+    AsyncStorage.removeItem("passwordResetTTL");
+    setPasswordResetCheck(false);
+    setPasswordUrlUuid(null);
+    setPasswordResetTTL(null);
+  };
+
   const isLoggedInFunc = async (username, password) => {
     const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/login`, { username: username, password: password });
     setIsLoggedIn(true);
@@ -131,10 +133,10 @@ export const DataProviderContext = ({ children }) => {
     const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotuser`, { email: email });
     return response;
   };
+
   const requestPasswordFunc = async (username) => {
     const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotpassword`, { username: username });
     const urlUuid = response.data.urlUuid;
-    // declare variable unix timestamp plus an hour
     const ttl = Math.floor(Date.now() / 1000) + 3600;
 
     AsyncStorage.setItem("passwordResetCheck", JSON.stringify(true));
@@ -150,10 +152,31 @@ export const DataProviderContext = ({ children }) => {
     setPasswordResetCheck(false);
   };
 
+  const validateResetTokenFunc = async (code, passwordUrlUuid) => {
+    try {
+      const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/validatereset`, { code: parseInt(code), requestUUID: passwordUrlUuid });
+      setResetCodeValidated(true);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const changePasswordFunc = async (code, passwordUrlUuid, newPassword) => {
+    console.log(code, passwordUrlUuid, newPassword);
+    try {
+      const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/changepass`, { code: parseInt(code), requestUUID: passwordUrlUuid, newPassword: newPassword });
+      return true;
+    } catch (error) {
+      console.log("error", error);
+      return false;
+    }
+  };
+
   const toggedThemeContextFunc = () => {
     setSavedTheme(savedTheme === "dark" ? "light" : "dark");
     AsyncStorage.setItem("savedTheme", JSON.stringify(savedTheme === "dark" ? "light" : "dark"));
   };
 
-  return <DataContext.Provider value={{ isLoggedIn, registeringFunc, passwordResetTTL, passwordUrlUuid, passwordResetCheck, swapPaswordCheckFunc, isLoggedInFunc, loggedOutFunc, requestPasswordFunc, toggedThemeContextFunc, requestUsernameFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={{ isLoggedIn, testFunc, changePasswordFunc, resetCodeValidated, registeringFunc, validateResetTokenFunc, passwordResetTTL, passwordUrlUuid, passwordResetCheck, swapPaswordCheckFunc, isLoggedInFunc, loggedOutFunc, requestPasswordFunc, toggedThemeContextFunc, requestUsernameFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
 };
