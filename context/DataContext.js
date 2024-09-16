@@ -1,11 +1,14 @@
-import React, { createContext, useState, useEffect, useRef } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { HOSTNAME } from "../config/config";
+import React, {
+  createContext, useState, useEffect,
+} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { HOSTNAME } from '../config/config';
 
 export const DataContext = createContext();
 
-export const DataProviderContext = ({ children }) => {
+// eslint-disable-next-line react/prop-types
+export function DataProviderContext({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [savedTheme, setSavedTheme] = useState(null);
   const [userToken, setUserToken] = useState(null);
@@ -22,63 +25,62 @@ export const DataProviderContext = ({ children }) => {
   };
 
   // Higher-order function to wrap any function with token expiration check
-  const withTokenCheck = (fn) => {
-    return async (...args) => {
-      if (isTokenExpired()) {
-        console.log("Token has expired.");
-        // Handle the expired token case here
-        // For example, refresh the token or redirect to login
-        return;
-      }
-      // If the token is not expired, proceed to call the original function
-      return await fn(...args);
-    };
+  const withTokenCheck = (fn) => async (...args) => {
+    if (isTokenExpired()) {
+      // Handle the expired token case here
+      // For example, refresh the token or redirect to login
+      return;
+    }
+    // If the token is not expired, proceed to call the original function
+    fn(...args);
   };
 
   // Example usage with an async function that needs the token check
+  // eslint-disable-next-line no-unused-vars
   const fetchUserDataWrapped = withTokenCheck(async () => {
-    console.log("Fetching user data...");
     // Your logic to fetch user data goes here
   });
 
   useEffect(() => {
-    AsyncStorage.getItem("loggedIn").then((loginstate) => {
+    AsyncStorage.getItem('loggedIn').then((loginstate) => {
       setIsLoggedIn(JSON.parse(loginstate));
     });
   }, []);
 
   useEffect(() => {
-    AsyncStorage.getItem("savedTheme").then((theme) => {
+    AsyncStorage.getItem('savedTheme').then((theme) => {
       setSavedTheme(JSON.parse(theme));
     });
   }, []);
 
   useEffect(() => {
-    AsyncStorage.getItem("passwordResetCheck").then((check) => {
+    AsyncStorage.getItem('passwordResetCheck').then((check) => {
       setPasswordResetCheck(JSON.parse(check));
     });
 
-    AsyncStorage.getItem("passwordUrlUuid").then((uuid) => {
+    AsyncStorage.getItem('passwordUrlUuid').then((uuid) => {
       setPasswordUrlUuid(JSON.parse(uuid));
     });
 
-    AsyncStorage.getItem("passwordResetTTL").then((ttl) => {
+    AsyncStorage.getItem('passwordResetTTL').then((ttl) => {
       setPasswordResetTTL(JSON.parse(ttl));
     });
   }, []);
 
-  //set the default shit
+  // set the default shit
   useEffect(() => {
     const loadData = async () => {
-      const keys = ["userToken", "tokenTTL", "userRtToken"];
+      const keys = ['userToken', 'tokenTTL', 'userRtToken'];
       try {
-        const [userToken, tokenTTL, userRtToken] = await Promise.all(keys.map((key) => AsyncStorage.getItem(key).then(JSON.parse)));
+        const [fetchedUserToken, fetchedTokenTTL, fetchedUserRtToken] = await Promise.all(
+          keys.map((key) => AsyncStorage.getItem(key).then(JSON.parse)),
+        );
 
-        setUserToken(userToken);
-        setTokenTTL(tokenTTL);
-        setUserRtToken(userRtToken);
+        setUserToken(fetchedUserToken);
+        setTokenTTL(fetchedTokenTTL);
+        setUserRtToken(fetchedUserRtToken);
       } catch (error) {
-        console.error("Failed to load user data:", error);
+        // Intentionally left empty because the error is handled
       }
     };
 
@@ -88,31 +90,30 @@ export const DataProviderContext = ({ children }) => {
   }, [isLoggedIn]);
 
   const testFunc = () => {
-    console.log("this fired");
-    AsyncStorage.removeItem("passwordResetCheck");
-    AsyncStorage.removeItem("passwordUrlUuid");
-    AsyncStorage.removeItem("passwordResetTTL");
+    AsyncStorage.removeItem('passwordResetCheck');
+    AsyncStorage.removeItem('passwordUrlUuid');
+    AsyncStorage.removeItem('passwordResetTTL');
     setPasswordResetCheck(false);
     setPasswordUrlUuid(null);
     setPasswordResetTTL(null);
   };
 
   const isLoggedInFunc = async (username, password) => {
-    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/login`, { username: username, password: password });
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/login`, { username, password });
     setIsLoggedIn(true);
-    AsyncStorage.setItem("userToken", JSON.stringify(response.data.token));
-    AsyncStorage.setItem("userRtToken", JSON.stringify(response.data.rt));
-    AsyncStorage.setItem("tokenTTL", JSON.stringify(response.data.tokenTTL));
-    AsyncStorage.setItem("loggedIn", JSON.stringify(true));
+    AsyncStorage.setItem('userToken', JSON.stringify(response.data.token));
+    AsyncStorage.setItem('userRtToken', JSON.stringify(response.data.rt));
+    AsyncStorage.setItem('tokenTTL', JSON.stringify(response.data.tokenTTL));
+    AsyncStorage.setItem('loggedIn', JSON.stringify(true));
     return response;
   };
 
   const loggedOutFunc = () => {
     setIsLoggedIn(false);
-    AsyncStorage.setItem("loggedIn", JSON.stringify(false));
-    AsyncStorage.removeItem("userToken");
-    AsyncStorage.removeItem("userRtToken");
-    AsyncStorage.removeItem("tokenTTL");
+    AsyncStorage.setItem('loggedIn', JSON.stringify(false));
+    AsyncStorage.removeItem('userToken');
+    AsyncStorage.removeItem('userRtToken');
+    AsyncStorage.removeItem('tokenTTL');
 
     setUserToken(null);
     setTokenTTL(null);
@@ -120,28 +121,28 @@ export const DataProviderContext = ({ children }) => {
   };
 
   const registeringFunc = async (username, password, email) => {
-    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/register`, { username: username, password: password, email: email });
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/register`, { username, password, email });
     setIsLoggedIn(true);
-    AsyncStorage.setItem("userToken", JSON.stringify(response.data.token));
-    AsyncStorage.setItem("userRtToken", JSON.stringify(response.data.rt));
-    AsyncStorage.setItem("tokenTTL", JSON.stringify(response.data.tokenTTL));
-    AsyncStorage.setItem("loggedIn", JSON.stringify(true));
+    AsyncStorage.setItem('userToken', JSON.stringify(response.data.token));
+    AsyncStorage.setItem('userRtToken', JSON.stringify(response.data.rt));
+    AsyncStorage.setItem('tokenTTL', JSON.stringify(response.data.tokenTTL));
+    AsyncStorage.setItem('loggedIn', JSON.stringify(true));
     return response;
   };
 
   const requestUsernameFunc = async (email) => {
-    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotuser`, { email: email });
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotuser`, { email });
     return response;
   };
 
   const requestPasswordFunc = async (username) => {
-    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotpassword`, { username: username });
-    const urlUuid = response.data.urlUuid;
+    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotpassword`, { username });
+    const { urlUuid } = response.data;
     const ttl = Math.floor(Date.now() / 1000) + 3600;
 
-    AsyncStorage.setItem("passwordResetCheck", JSON.stringify(true));
-    AsyncStorage.setItem("passwordUrlUuid", JSON.stringify(urlUuid));
-    AsyncStorage.setItem("passwordResetTTL", JSON.stringify(ttl));
+    AsyncStorage.setItem('passwordResetCheck', JSON.stringify(true));
+    AsyncStorage.setItem('passwordUrlUuid', JSON.stringify(urlUuid));
+    AsyncStorage.setItem('passwordResetTTL', JSON.stringify(ttl));
     setPasswordResetCheck(true);
     setPasswordResetTTL(ttl);
     setPasswordUrlUuid(urlUuid);
@@ -152,9 +153,9 @@ export const DataProviderContext = ({ children }) => {
     setPasswordResetCheck(false);
   };
 
-  const validateResetTokenFunc = async (code, passwordUrlUuid) => {
+  const validateResetTokenFunc = async (code, passUrlUUID) => {
     try {
-      const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/validatereset`, { code: parseInt(code), requestUUID: passwordUrlUuid });
+      await axios.post(`${HOSTNAME}/api/v2/public/auth/validatereset`, { code: parseInt(code, 10), requestUUID: passUrlUUID });
       setResetCodeValidated(true);
       return true;
     } catch (error) {
@@ -162,21 +163,46 @@ export const DataProviderContext = ({ children }) => {
     }
   };
 
-  const changePasswordFunc = async (code, passwordUrlUuid, newPassword) => {
-    console.log(code, passwordUrlUuid, newPassword);
+  const changePasswordFunc = async (code, passUrlUUID, newPassword) => {
     try {
-      const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/changepass`, { code: parseInt(code), requestUUID: passwordUrlUuid, newPassword: newPassword });
+      await axios.post(`${HOSTNAME}/api/v2/public/auth/changepass`, { code: parseInt(code, 10), requestUUID: passUrlUUID, newPassword });
       return true;
     } catch (error) {
-      console.log("error", error);
       return false;
     }
   };
 
   const toggedThemeContextFunc = () => {
-    setSavedTheme(savedTheme === "dark" ? "light" : "dark");
-    AsyncStorage.setItem("savedTheme", JSON.stringify(savedTheme === "dark" ? "light" : "dark"));
+    setSavedTheme(savedTheme === 'dark' ? 'light' : 'dark');
+    AsyncStorage.setItem('savedTheme', JSON.stringify(savedTheme === 'dark' ? 'light' : 'dark'));
   };
 
-  return <DataContext.Provider value={{ isLoggedIn, testFunc, changePasswordFunc, resetCodeValidated, registeringFunc, validateResetTokenFunc, passwordResetTTL, passwordUrlUuid, passwordResetCheck, swapPaswordCheckFunc, isLoggedInFunc, loggedOutFunc, requestPasswordFunc, toggedThemeContextFunc, requestUsernameFunc, savedTheme, userRtToken, userToken, tokenTTL }}>{children}</DataContext.Provider>;
-};
+  return (
+    <DataContext.Provider
+        // eslint-disable-next-line react/jsx-no-constructed-context-values
+      value={{
+        isLoggedIn,
+        testFunc,
+        changePasswordFunc,
+        resetCodeValidated,
+        registeringFunc,
+        validateResetTokenFunc,
+        passwordResetTTL,
+        passwordUrlUuid,
+        passwordResetCheck,
+        swapPaswordCheckFunc,
+        isLoggedInFunc,
+        loggedOutFunc,
+        requestPasswordFunc,
+        toggedThemeContextFunc,
+        requestUsernameFunc,
+        savedTheme,
+        userRtToken,
+        userToken,
+        tokenTTL,
+      }}
+    >
+      {children}
+    </DataContext.Provider>
+  );
+}

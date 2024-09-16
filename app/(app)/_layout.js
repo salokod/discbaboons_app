@@ -1,55 +1,51 @@
-import { Button } from "react-native";
-import React, { useContext, useEffect } from "react";
-import { Stack, router, Redirect } from "expo-router";
-import { DataContext } from "../../context/DataContext";
-import { useThemeMode } from "@rneui/themed";
+import { Button } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { Stack, router, Redirect } from 'expo-router';
+import { useThemeMode } from '@rneui/themed';
+import { DataContext } from '../../context/DataContext';
 
+// eslint-disable-next-line no-underscore-dangle
 export default function _layout() {
   const { isLoggedIn, savedTheme, passwordResetCheck } = useContext(DataContext);
-  const { mode, setMode } = useThemeMode();
+  const { setMode } = useThemeMode();
 
   useEffect(() => {
     setMode(savedTheme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedTheme]);
 
-  useEffect(() => {
-    console.log("uef", passwordResetCheck);
-  }, [passwordResetCheck]);
-
-  console.log("reset check", isLoggedIn, passwordResetCheck);
   if (!isLoggedIn) {
     if (passwordResetCheck) {
       return <Redirect href="/passwordreset" />;
-    } else {
-      return <Redirect href="/login" />;
     }
+    return <Redirect href="/login" />;
   }
   return (
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: "red",
+          backgroundColor: 'red',
         },
-        headerTintColor: "white",
+        headerTintColor: 'white',
         headerShown: false,
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          headerTitle: "Home",
+          headerTitle: 'Home',
           headerRight: () => (
             <Button
               onPress={() => {
-                router.push("contact");
+                router.push('contact');
               }}
               title="Contact"
             />
           ),
         }}
       />
-      <Stack.Screen name="about" options={{ headerTitle: "About" }} />
-      <Stack.Screen name="blog/index" options={{ headerTitle: "All Blog Posts" }} />
+      <Stack.Screen name="about" options={{ headerTitle: 'About' }} />
+      <Stack.Screen name="blog/index" options={{ headerTitle: 'All Blog Posts' }} />
       <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
     </Stack>
   );

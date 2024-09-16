@@ -1,135 +1,164 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-import React, { useEffect, useContext } from "react";
-import { Drawer } from "expo-router/drawer";
-import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import { Feather, AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { router, usePathname } from "expo-router";
-import { DataContext } from "../../../context/DataContext";
-import { useThemeMode, useTheme } from "@rneui/themed";
-import { StatusBar } from "expo-status-bar";
+import {
+  View, Text, StyleSheet, Image,
+} from 'react-native';
+import React, { useContext } from 'react';
+import { Drawer } from 'expo-router/drawer';
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import {
+  Feather, AntDesign, MaterialIcons, Ionicons,
+} from '@expo/vector-icons';
+import { router, usePathname } from 'expo-router';
+import { useThemeMode, useTheme } from '@rneui/themed';
+import { StatusBar } from 'expo-status-bar';
+import { DataContext } from '../../../context/DataContext';
 
-const CustomDrawerContent = (props) => {
-  const { isLoggedInFunc, loggedOutFunc, toggedThemeContextFunc } = useContext(DataContext);
+const styles = StyleSheet.create({
+  navItemLabel: {
+    fontSize: 18,
+    marginLeft: -20,
+  },
+  userDetailsWrapper: {
+    marginLeft: 10,
+    marginTop: 25,
+  },
+  userEmail: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+  },
+  userImg: {
+    borderRadius: 40,
+  },
+  // eslint-disable-next-line react-native/no-color-literals
+  userInfoWrapper: {
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+function CustomDrawerContent(props) {
+  const { loggedOutFunc, toggedThemeContextFunc } = useContext(DataContext);
   const { mode, setMode } = useThemeMode();
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    console.log(pathname);
-  }, [pathname]);
-
   const toggleThemeFunc = () => {
-    setMode(mode === "dark" ? "light" : "dark");
+    setMode(mode === 'dark' ? 'light' : 'dark');
     toggedThemeContextFunc();
   };
 
   return (
+  // eslint-disable-next-line react/jsx-props-no-spreading
     <DrawerContentScrollView {...props}>
-      <StatusBar style={mode === "dark" ? "light" : "dark"} />
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
       <View style={styles.userInfoWrapper}>
-        <Image source={{ uri: "https://randomuser.me/api/portraits/women/26.jpg" }} width={80} height={80} style={styles.userImg} />
+        <Image source={{ uri: 'https://randomuser.me/api/portraits/women/26.jpg' }} width={80} height={80} style={styles.userImg} />
         <View style={styles.userDetailsWrapper}>
           <Text style={styles.userName}>John Doe</Text>
           <Text style={styles.userEmail}>john@email.com</Text>
         </View>
       </View>
       <DrawerItem
-        icon={({ color, size }) => <Feather name="list" size={size} color={pathname == "/bag" ? "#fff" : "#000"} />}
-        label={"My Bag"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/bag" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/bag" ? "#333" : "#fff" }}
+          // eslint-disable-next-line max-len
+          // eslint-disable-next-line react-native/no-color-literals, react/no-unstable-nested-components
+        icon={({ size }) => <Feather name="list" size={size} color={pathname === '/bag' ? '#fff' : '#000'} />}
+        label="My Bag"
+          // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/bag' ? '#fff' : '#000' }]}
+          // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/bag' ? '#333' : '#fff' }}
         onPress={() => {
-          router.push("/(drawer)/(tabs)/bag");
+          router.push('/(drawer)/(tabs)/bag');
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <AntDesign name="user" size={size} color={pathname == "/round" ? "#fff" : "#000"} />}
-        label={"Round"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/round" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/round" ? "#333" : "#fff" }}
+          // eslint-disable-next-line max-len
+          // eslint-disable-next-line react-native/no-color-literals, react/no-unstable-nested-components
+        icon={({ size }) => <AntDesign name="user" size={size} color={pathname === '/round' ? '#fff' : '#000'} />}
+        label="Round"
+          // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/round' ? '#fff' : '#000' }]}
+          // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/round' ? '#333' : '#fff' }}
         onPress={() => {
-          router.push("/(drawer)/(tabs)/round");
+          router.push('/(drawer)/(tabs)/round');
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <MaterialIcons name="favorite-outline" size={size} color={pathname == "/favourites" ? "#fff" : "#000"} />}
-        label={"Favourites"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/favourites" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/favourites" ? "#333" : "#fff" }}
+          // eslint-disable-next-line max-len
+          // eslint-disable-next-line react-native/no-color-literals, react/no-unstable-nested-components, max-len
+        icon={({ size }) => <MaterialIcons name="favorite-outline" size={size} color={pathname === '/favourites' ? '#fff' : '#000'} />}
+        label="Favourites"
+          // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/favourites' ? '#fff' : '#000' }]}
+          // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/favourites' ? '#333' : '#fff' }}
         onPress={() => {
-          router.push("/favourites");
+          router.push('/favourites');
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <Ionicons name="settings-outline" size={size} color={pathname == "/settings" ? "#fff" : "#000"} />}
-        label={"Settings"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/settings" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/settings" ? "#333" : "#fff" }}
+          // eslint-disable-next-line react/no-unstable-nested-components
+        icon={({ size }) => <Ionicons name="settings-outline" size={size} color={pathname === '/settings' ? '#fff' : '#000'} />}
+        label="Settings"
+          // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/settings' ? '#fff' : '#000' }]}
+        // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/settings' ? '#333' : '#fff' }}
         onPress={() => {
-          router.push("/settings");
+          router.push('/settings');
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <Ionicons name="toggle" size={size} color={pathname == "/toggle" ? "#fff" : "#000"} />}
-        label={"Toggle Theme"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/toggle" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/toggle" ? "#333" : "#fff" }}
+          // eslint-disable-next-line react/no-unstable-nested-components
+        icon={({ size }) => <Ionicons name="toggle" size={size} color={pathname === '/toggle' ? '#fff' : '#000'} />}
+        label="Toggle Theme"
+        // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/toggle' ? '#fff' : '#000' }]}
+        // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/toggle' ? '#333' : '#fff' }}
         onPress={() => {
           toggleThemeFunc();
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <Ionicons name="log-out" size={size} color={pathname == "/logout" ? "#fff" : "#000"} />}
-        label={"Logout"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/logout" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/logout" ? "#333" : "#fff" }}
+          // eslint-disable-next-line react/no-unstable-nested-components
+        icon={({ size }) => <Ionicons name="log-out" size={size} color={pathname === '/logout' ? '#fff' : '#000'} />}
+        label="Logout"
+          // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/logout' ? '#fff' : '#000' }]}
+          // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/logout' ? '#333' : '#fff' }}
         onPress={() => {
           loggedOutFunc();
         }}
       />
     </DrawerContentScrollView>
   );
-};
+}
 
 export default function Layout() {
   const theme = useTheme();
-  const isDark = theme.theme.mode === "dark";
+  const isDark = theme.theme.mode === 'dark';
 
   return (
-    <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />} screenOptions={{ headerShown: false, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" }, headerTintColor: isDark ? "white" : "black" }}>
+    <Drawer
+        // eslint-disable-next-line
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerShown: false, headerStyle: { backgroundColor: isDark ? 'black' : 'white' }, headerTitleStyle: { color: isDark ? 'white' : 'black' }, headerTintColor: isDark ? 'white' : 'black',
+      }}
+    >
       <Drawer.Screen name="favourites" options={{ headerShown: true }} />
       <Drawer.Screen name="settings" options={{ headerShown: true }} />
     </Drawer>
   );
 }
-
-const styles = StyleSheet.create({
-  navItemLabel: {
-    marginLeft: -20,
-    fontSize: 18,
-  },
-  userInfoWrapper: {
-    flexDirection: "row",
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-    marginBottom: 10,
-  },
-  userImg: {
-    borderRadius: 40,
-  },
-  userDetailsWrapper: {
-    marginTop: 25,
-    marginLeft: 10,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  userEmail: {
-    fontSize: 16,
-    fontStyle: "italic",
-    textDecorationLine: "underline",
-  },
-});
