@@ -6,5 +6,5 @@ import { DataContext } from "../../context/DataContext";
 export default function Page() {
   const { isLoggedInFunc } = useContext(DataContext);
 
-  return <Redirect href="(drawer)/(tabs)/feed" />;
+  return <Redirect href="(drawer)/(tabs)/bag" />;
 }

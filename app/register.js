@@ -75,7 +75,9 @@ export default function Page() {
               }}
               source={require("../assets/spiro_logo_outline.png")}
             />
-
+            <Text style={{}} h4>
+              Register below
+            </Text>
             <View style={{ width: "75%" }}>
               <Input autoCapitalize="none" errorStyle={{ color: "red" }} errorMessage={!emailCheck && email.length > 0 ? "Enter valid email" : null} onChangeText={(value) => setEmail(value)} placeholder="email" leftIcon={<Icon name="email" color={theme.colors.primaryButton} type="MaterialCommunityIcons" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />
               <Input autoCapitalize="none" errorStyle={{ color: "red" }} errorMessage={!usernameCheck && username.length > 0 ? "Username must be greater than 3 characters and less than 30" : null} onChangeText={(value) => setUsername(value)} placeholder="username" leftIcon={<Icon name="user" color={theme.colors.primaryButton} type="font-awesome" size={25} style={{ paddingRight: 5, width: 35, color: theme.colors.background }} />} />

@@ -1,31 +1,41 @@
 import { Button } from "react-native";
 import React from "react";
 import { Tabs, router } from "expo-router";
-import { Feather, AntDesign } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { DrawerToggleButton } from "@react-navigation/drawer";
 import { useTheme } from "@rneui/themed";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Text } from "@rneui/themed";
 
 export default function _layout() {
   const theme = useTheme();
   const isDark = theme.theme.mode === "dark";
 
   return (
-    <Tabs screenOptions={{ headerLeft: () => <DrawerToggleButton tintColor={isDark ? "white" : "black"} />, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" }, tabBarStyle: { backgroundColor: isDark ? "black" : "white" }, tabBarActiveTintColor: isDark ? "#fe00f6" : "#fe00f6", tabBarInactiveTintColor: isDark ? "white" : "black" }}>
+    <Tabs screenOptions={{ headerLeft: () => <DrawerToggleButton tintColor={isDark ? "white" : "black"} />, headerStyle: { backgroundColor: isDark ? "black" : "white" }, headerTitleStyle: { color: isDark ? "white" : "black" }, tabBarStyle: { backgroundColor: isDark ? "black" : "white" }, tabBarActiveTintColor: isDark ? "#ff8bcf" : "#fe00f6", tabBarInactiveTintColor: isDark ? "white" : "black" }}>
       <Tabs.Screen
-        name="feed"
+        name="bag"
         options={{
-          tabBarIcon: ({ color }) => <Feather name="list" size={24} color={color} />,
-          tabBarLabel: "Feed",
-          headerTitle: "Feed",
-          headerRight: () => <Button onPress={() => router.push("feed/new")} title="Add Post" />,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bag-personal" size={24} color={color} />,
+          tabBarLabel: ({ color }) => (
+            <Text h5 style={{ color: color, fontWeight: "bold" }}>
+              My Bag
+            </Text>
+          ),
+          headerTitle: "My Bag",
+          headerRight: () => <Button onPress={() => router.push("bag/new")} title="Add Post" />,
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="round"
         options={{
           tabBarIcon: ({ color }) => <AntDesign name="user" size={24} color={color} />,
-          tabBarLabel: "Profile",
-          headerTitle: "Profile",
+          tabBarLabel: ({ color }) => (
+            <Text h5 style={{ color: color, fontWeight: "bold" }}>
+              Rounds
+            </Text>
+          ),
+          headerTitle: "Rounds",
         }}
       />
     </Tabs>

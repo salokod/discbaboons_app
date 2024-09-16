@@ -34,21 +34,21 @@ const CustomDrawerContent = (props) => {
         </View>
       </View>
       <DrawerItem
-        icon={({ color, size }) => <Feather name="list" size={size} color={pathname == "/feed" ? "#fff" : "#000"} />}
-        label={"Feed"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/feed" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/feed" ? "#333" : "#fff" }}
+        icon={({ color, size }) => <Feather name="list" size={size} color={pathname == "/bag" ? "#fff" : "#000"} />}
+        label={"My Bag"}
+        labelStyle={[styles.navItemLabel, { color: pathname == "/bag" ? "#fff" : "#000" }]}
+        style={{ backgroundColor: pathname == "/bag" ? "#333" : "#fff" }}
         onPress={() => {
-          router.push("/(drawer)/(tabs)/feed");
+          router.push("/(drawer)/(tabs)/bag");
         }}
       />
       <DrawerItem
-        icon={({ color, size }) => <AntDesign name="user" size={size} color={pathname == "/profile" ? "#fff" : "#000"} />}
-        label={"Profile"}
-        labelStyle={[styles.navItemLabel, { color: pathname == "/profile" ? "#fff" : "#000" }]}
-        style={{ backgroundColor: pathname == "/profile" ? "#333" : "#fff" }}
+        icon={({ color, size }) => <AntDesign name="user" size={size} color={pathname == "/round" ? "#fff" : "#000"} />}
+        label={"Round"}
+        labelStyle={[styles.navItemLabel, { color: pathname == "/round" ? "#fff" : "#000" }]}
+        style={{ backgroundColor: pathname == "/round" ? "#333" : "#fff" }}
         onPress={() => {
-          router.push("/(drawer)/(tabs)/profile");
+          router.push("/(drawer)/(tabs)/round");
         }}
       />
       <DrawerItem
