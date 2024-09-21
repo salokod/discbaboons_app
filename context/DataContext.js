@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import { HOSTNAME } from '../config/config';
 
 export const DataContext = createContext();
@@ -10,6 +11,9 @@ export const DataContext = createContext();
 // eslint-disable-next-line react/prop-types
 export function DataProviderContext({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
   const [savedTheme, setSavedTheme] = useState(null);
   const [userToken, setUserToken] = useState(null);
   const [resetCodeValidated, setResetCodeValidated] = useState(false);
@@ -75,7 +79,10 @@ export function DataProviderContext({ children }) {
         const [fetchedUserToken, fetchedTokenTTL, fetchedUserRtToken] = await Promise.all(
           keys.map((key) => AsyncStorage.getItem(key).then(JSON.parse)),
         );
-
+        const { user, email, id } = jwtDecode(fetchedUserToken);
+        setUserName(user);
+        setUserEmail(email);
+        setUserId(id);
         setUserToken(fetchedUserToken);
         setTokenTTL(fetchedTokenTTL);
         setUserRtToken(fetchedUserRtToken);
@@ -100,11 +107,13 @@ export function DataProviderContext({ children }) {
 
   const isLoggedInFunc = async (username, password) => {
     const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/login`, { username, password });
+
     setIsLoggedIn(true);
     AsyncStorage.setItem('userToken', JSON.stringify(response.data.token));
     AsyncStorage.setItem('userRtToken', JSON.stringify(response.data.rt));
     AsyncStorage.setItem('tokenTTL', JSON.stringify(response.data.tokenTTL));
     AsyncStorage.setItem('loggedIn', JSON.stringify(true));
+
     return response;
   };
 
@@ -130,10 +139,7 @@ export function DataProviderContext({ children }) {
     return response;
   };
 
-  const requestUsernameFunc = async (email) => {
-    const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotuser`, { email });
-    return response;
-  };
+  const requestUsernameFunc = async (email) => axios.post(`${HOSTNAME}/api/v2/public/auth/forgotuser`, { email });
 
   const requestPasswordFunc = async (username) => {
     const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/forgotpassword`, { username });
@@ -200,6 +206,9 @@ export function DataProviderContext({ children }) {
         userRtToken,
         userToken,
         tokenTTL,
+        userName,
+        userEmail,
+        userId,
       }}
     >
       {children}

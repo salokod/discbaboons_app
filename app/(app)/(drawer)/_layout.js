@@ -1,5 +1,5 @@
 import {
-  View, Text, StyleSheet, Image,
+  View, Text, StyleSheet,
 } from 'react-native';
 import React, { useContext } from 'react';
 import { Drawer } from 'expo-router/drawer';
@@ -26,9 +26,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textDecorationLine: 'underline',
   },
-  userImg: {
-    borderRadius: 40,
-  },
   // eslint-disable-next-line react-native/no-color-literals
   userInfoWrapper: {
     borderBottomColor: '#ccc',
@@ -45,7 +42,9 @@ const styles = StyleSheet.create({
 });
 
 function CustomDrawerContent(props) {
-  const { loggedOutFunc, toggedThemeContextFunc } = useContext(DataContext);
+  const {
+    loggedOutFunc, toggedThemeContextFunc, userName, userEmail,
+  } = useContext(DataContext);
   const { mode, setMode } = useThemeMode();
 
   const pathname = usePathname();
@@ -60,10 +59,9 @@ function CustomDrawerContent(props) {
     <DrawerContentScrollView {...props}>
       <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
       <View style={styles.userInfoWrapper}>
-        <Image source={{ uri: 'https://randomuser.me/api/portraits/women/26.jpg' }} width={80} height={80} style={styles.userImg} />
         <View style={styles.userDetailsWrapper}>
-          <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.userEmail}>john@email.com</Text>
+          <Text style={styles.userName}>{userName}</Text>
+          <Text style={styles.userEmail}>{userEmail}</Text>
         </View>
       </View>
       <DrawerItem
