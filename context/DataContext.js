@@ -23,10 +23,7 @@ export function DataProviderContext({ children }) {
   const [passwordResetCheck, setPasswordResetCheck] = useState(false);
   const [passwordUrlUuid, setPasswordUrlUuid] = useState(null);
   const [passwordResetTTL, setPasswordResetTTL] = useState(null);
-
-  const baboonHeaders = {
-    Authorization: `Bearer ${userToken}`
-  }
+  const [userBags, setUserBags] = useState(null);
 
   const isTokenExpired = () => {
     const currentUnixTime = Math.floor(Date.now() / 1000);
@@ -40,6 +37,7 @@ export function DataProviderContext({ children }) {
     fn(...args);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const fetchUserDataWrapped = withTokenCheck(async () => {
     // Your logic to fetch user data goes here
   });
@@ -94,6 +92,19 @@ export function DataProviderContext({ children }) {
     }
   }, [isLoggedIn]);
 
+  // use effect to get all bags
+  useEffect(() => {
+    if (isLoggedIn && userToken) {
+      // eslint-disable-next-line
+      bagFunctions.findAllBags();
+    }
+    // eslint-disable-next-line
+  }, [isLoggedIn, userToken]);
+
+  const baboonHeaders = {
+    Authorization: `Bearer ${userToken || AsyncStorage.getItem('userToken').then(JSON.parse)}`,
+  };
+
   const authFunctions = {
     testFunc: () => {
       AsyncStorage.removeItem('passwordResetCheck');
@@ -104,7 +115,11 @@ export function DataProviderContext({ children }) {
       setPasswordResetTTL(null);
     },
     isLoggedInFunc: async (username, password) => {
-      const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/login`, { username, password });
+      const response = await axios.post(`${HOSTNAME}/api/v2/public/auth/login`, { username, password }, {
+        headers: {
+          'Content-Type': 'application/json', Accept: 'application/json',
+        },
+      });
 
       setIsLoggedIn(true);
       AsyncStorage.setItem('userToken', JSON.stringify(response.data.token));
@@ -177,15 +192,17 @@ export function DataProviderContext({ children }) {
   const bagFunctions = {
     findAllBags: async () => {
       const response = await axios.get(`${HOSTNAME}/api/v2/protected/bag/findallbags`, { headers: baboonHeaders });
-
-      console.log(response.data);
-
+      if (response.status === 200) {
+        setUserBags(response.data.bags);
+        AsyncStorage.setItem('usersBags', JSON.stringify(response.data.bags));
+      }
       return response;
     },
   };
 
   return (
     <DataContext.Provider
+        // eslint-disable-next-line
       value={{
         isLoggedIn,
         resetCodeValidated,
@@ -199,6 +216,7 @@ export function DataProviderContext({ children }) {
         userName,
         userEmail,
         userId,
+        userBags,
         ...authFunctions,
         ...bagFunctions,
       }}

@@ -10,12 +10,16 @@ const theme = createTheme({
     font: 'black',
     primaryButton: '#36399a',
     secondaryButton: '#ed008c',
+    mainScreenBackground: '#eaeaea',
+    topBarBackground: '#d2d2d2',
   },
   darkColors: {
     primary: '#36399a',
     font: 'white',
     primaryButton: '#36399a',
     secondaryButton: '#ed008c',
+    mainScreenBackground: '#505050',
+    topBarBackground: '#414141',
   },
   components: {
     Button: {

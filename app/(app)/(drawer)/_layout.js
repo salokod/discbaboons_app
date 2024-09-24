@@ -56,7 +56,10 @@ function CustomDrawerContent(props) {
 
   return (
   // eslint-disable-next-line react/jsx-props-no-spreading
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView
+        // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+    >
       <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
       <View style={styles.userInfoWrapper}>
         <View style={styles.userDetailsWrapper}>

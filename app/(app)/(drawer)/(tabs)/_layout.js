@@ -1,10 +1,12 @@
-import { Button } from 'react-native';
+import { Button, Image } from 'react-native';
 import React from 'react';
 import { Tabs, router } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { useTheme, Text } from '@rneui/themed';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import spiroLogoOutline from '../../../../assets/spiro_logo_outline.png'; // Import the image
+
 
 export default function _layout() {
   const theme = useTheme();
@@ -24,7 +26,12 @@ export default function _layout() {
               My Bag
             </Text>
           ),
-          headerTitle: 'My Bag',
+          headerTitle: () => (
+            <Image
+                source={spiroLogoOutline} // Use the imported image
+              style={{ width: 35, height: 35 }}
+            />
+          ),
           headerRight: () => <Button onPress={() => router.push('bag/new')} title="Add Post" />,
         }}
       />
