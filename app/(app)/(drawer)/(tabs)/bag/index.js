@@ -4,7 +4,7 @@ import {
   StyleSheet, View, ScrollView, RefreshControl,
 } from 'react-native';
 import {
-  useTheme, Text, ListItem, Avatar,
+  useTheme, Text, ListItem,
 } from '@rneui/themed';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
@@ -17,6 +17,7 @@ export default function Page() {
   const [bagSelected, setBagSelected] = useState(null);
   const [filteredDiscs, setFilteredDiscs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [checked, setChecked] = useState({});
 
   const styles = StyleSheet.create({
     buttonContainer: {
@@ -142,16 +143,40 @@ export default function Page() {
     </View>
   );
 
+  const handleCheck = (item) => {
+    setChecked((prevChecked) => ({
+      ...prevChecked,
+      [item.baboontype]: !prevChecked[item.baboontype],
+    }));
+  };
+
   const renderDisc = (item) => (
     <ListItem
       bottomDivider
       containerStyle={[
-        styles.listItemContainer]}
+        styles.listItemContainer,
+        {
+          backgroundColor: checked[item.baboontype]
+            ? theme.colors.highlightedColor
+            : theme.colors.baseColor,
+        },
+      ]}
       key={item.baboontype}
     >
-      <Avatar
-        rounded
-        containerStyle={{ backgroundColor: item.discColor }}
+      <ListItem.CheckBox
+          // Use ThemeProvider to change the defaults of the checkbox
+        iconType="material-community"
+        checkedIcon="checkbox-marked-circle"
+        uncheckedIcon="checkbox-blank-circle"
+        containerStyle={{
+          backgroundColor: theme.colors.baseColor,
+          borderRadius: 25,
+        }}
+        uncheckedColor={item.discColor}
+        checkedColor={item.discColor}
+        size={30}
+        checked={checked[item.baboontype] || false}
+        onPress={() => handleCheck(item)}
       />
       <ListItem.Content style={{ flexDirection: 'row', width: '100%' }}>
         <View style={{ flex: 0.4 }}>
