@@ -23,7 +23,8 @@ export function DataProviderContext({ children }) {
   const [passwordResetCheck, setPasswordResetCheck] = useState(false);
   const [passwordUrlUuid, setPasswordUrlUuid] = useState(null);
   const [passwordResetTTL, setPasswordResetTTL] = useState(null);
-  const [userBags, setUserBags] = useState(null);
+  const [userBags, setUserBags] = useState([]);
+  const [userDiscs, setUserDiscs] = useState([]);
 
   const isTokenExpired = () => {
     const currentUnixTime = Math.floor(Date.now() / 1000);
@@ -97,6 +98,8 @@ export function DataProviderContext({ children }) {
     if (isLoggedIn && userToken) {
       // eslint-disable-next-line
       bagFunctions.findAllBags();
+      // eslint-disable-next-line
+      discFunctions.findAllDiscs();
     }
     // eslint-disable-next-line
   }, [isLoggedIn, userToken]);
@@ -194,7 +197,18 @@ export function DataProviderContext({ children }) {
       const response = await axios.get(`${HOSTNAME}/api/v2/protected/bag/findallbags`, { headers: baboonHeaders });
       if (response.status === 200) {
         setUserBags(response.data.bags);
-        AsyncStorage.setItem('usersBags', JSON.stringify(response.data.bags));
+        AsyncStorage.setItem('userBags', JSON.stringify(response.data.bags));
+      }
+      return response;
+    },
+  };
+
+  const discFunctions = {
+    findAllDiscs: async () => {
+      const response = await axios.get(`${HOSTNAME}/api/v2/protected/disc/findalldiscs`, { headers: baboonHeaders });
+      if (response.status === 200) {
+        setUserDiscs(response.data.discs);
+        AsyncStorage.setItem('userDiscs', JSON.stringify(response.data.discs));
       }
       return response;
     },
@@ -217,8 +231,10 @@ export function DataProviderContext({ children }) {
         userEmail,
         userId,
         userBags,
+        userDiscs,
         ...authFunctions,
         ...bagFunctions,
+        ...discFunctions,
       }}
     >
       {children}

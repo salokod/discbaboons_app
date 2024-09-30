@@ -7,7 +7,6 @@ import { useTheme, Text } from '@rneui/themed';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import spiroLogoOutline from '../../../../assets/spiro_logo_outline.png'; // Import the image
 
-
 export default function _layout() {
   const theme = useTheme();
   const isDark = theme.theme.mode === 'dark';
@@ -28,7 +27,7 @@ export default function _layout() {
           ),
           headerTitle: () => (
             <Image
-                source={spiroLogoOutline} // Use the imported image
+              source={spiroLogoOutline} // Use the imported image
               style={{ width: 35, height: 35 }}
             />
           ),
