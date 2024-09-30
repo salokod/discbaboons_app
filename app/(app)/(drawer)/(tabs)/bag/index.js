@@ -1,17 +1,22 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import {
+  StyleSheet, View, ScrollView, RefreshControl,
+} from 'react-native';
 import {
   useTheme, Text, ListItem, Avatar,
 } from '@rneui/themed';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useSnackBar } from 'react-native-snackbar-hook';
 import { DataContext } from '../../../../../context/DataContext';
 
 export default function Page() {
-  const { userBags, userDiscs } = useContext(DataContext);
+  const { showSnackBar } = useSnackBar();
+  const { userBags, userDiscs, findAllDiscs } = useContext(DataContext);
   const { theme } = useTheme();
   const [bagSelected, setBagSelected] = useState(null);
   const [filteredDiscs, setFilteredDiscs] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const styles = StyleSheet.create({
     buttonContainer: {
@@ -22,7 +27,7 @@ export default function Page() {
       minHeight: 50,
     },
     container: {
-      backgroundColor: theme.colors.mainScreenBackground,
+      backgroundColor: theme.colors.mainBackgroundColor,
       flex: 1,
     },
     // contentContainer: {
@@ -89,7 +94,7 @@ export default function Page() {
       flex: 1,
       fontSize: 12,
       fontWeight: 'bold',
-      margin: 5,
+      margin: 2,
       // minWidth: 40,
       padding: 10,
       textAlign: 'center', // Ensure enough width for two-digit numbers
@@ -119,19 +124,29 @@ export default function Page() {
     }
   }, [bagSelected, userDiscs]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const response = await findAllDiscs();
+      showSnackBar(response.data.message, 'success');
+      setRefreshing(false);
+    } catch (error) {
+      showSnackBar(error.response.data.message, 'error');
+      setRefreshing(false);
+    }
+  };
+
   const renderBag = (item) => (
     <View style={styles.item}>
       <Text style={[styles.textItem, styles.labelText]}>{item.bagName}</Text>
     </View>
   );
 
-  const renderDisc = (item, index) => (
+  const renderDisc = (item) => (
     <ListItem
       bottomDivider
       containerStyle={[
-        styles.listItemContainer,
-        index % 2 === 0 && styles.alternateBackground,
-      ]}
+        styles.listItemContainer]}
       key={item.baboontype}
     >
       <Avatar
@@ -139,11 +154,11 @@ export default function Page() {
         containerStyle={{ backgroundColor: item.discColor }}
       />
       <ListItem.Content style={{ flexDirection: 'row', width: '100%' }}>
-        <View style={{ flex: 0.35 }}>
-          <ListItem.Title>{item.disc}</ListItem.Title>
-          <ListItem.Subtitle style={styles.subtitleText}>{item.brand}</ListItem.Subtitle>
+        <View style={{ flex: 0.4 }}>
+          <ListItem.Title numberOfLines={1} ellipsizeMode="tail" style={{ fontWeight: 'bold' }}>{item.disc}</ListItem.Title>
+          <ListItem.Subtitle style={styles.subtitleText} numberOfLines={1} ellipsizeMode="tail">{item.brand}</ListItem.Subtitle>
         </View>
-        <View style={{ flex: 0.65 }}>
+        <View style={{ flex: 0.6 }}>
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <Text style={styles.textBox} numberOfLines={1}>{item.speed}</Text>
             <Text style={styles.textBox} numberOfLines={1}>{item.glide}</Text>
@@ -181,7 +196,10 @@ export default function Page() {
         />
         )}
       </View>
-      <ScrollView>
+      <ScrollView refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.font} title="loading your data, you baboon...." titleColor={theme.colors.font} />
+      }
+      >
         {filteredDiscs && filteredDiscs.map((disc, index) => renderDisc(disc, index))}
       </ScrollView>
     </View>

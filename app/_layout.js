@@ -11,7 +11,9 @@ const theme = createTheme({
     primaryButton: '#36399a',
     secondaryButton: '#ed008c',
     mainScreenBackground: '#eaeaea',
+    alternateBackground: '#d2d2d2',
     topBarBackground: '#d2d2d2',
+    mainBackgroundColor: '#F2F2F2',
   },
   darkColors: {
     primary: '#36399a',
@@ -19,7 +21,10 @@ const theme = createTheme({
     primaryButton: '#36399a',
     secondaryButton: '#ed008c',
     mainScreenBackground: '#505050',
+    alternateBackground: '#585858',
     topBarBackground: '#414141',
+    mainBackgroundColor: '#171717',
+
   },
   components: {
     Button: {
