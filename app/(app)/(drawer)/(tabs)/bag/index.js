@@ -4,7 +4,7 @@ import {
   StyleSheet, View, ScrollView, RefreshControl,
 } from 'react-native';
 import {
-  useTheme, Text, ListItem,
+  useTheme, Text, ListItem, Button,
 } from '@rneui/themed';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
@@ -18,6 +18,7 @@ export default function Page() {
   const [filteredDiscs, setFilteredDiscs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [checked, setChecked] = useState({});
+  const [anyChecked, setAnyChecked] = useState(false);
 
   const styles = StyleSheet.create({
     buttonContainer: {
@@ -125,6 +126,10 @@ export default function Page() {
     }
   }, [bagSelected, userDiscs]);
 
+  useEffect(() => {
+    setAnyChecked(Object.values(checked).some((value) => value === true));
+  }, [checked]);
+
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -226,7 +231,55 @@ export default function Page() {
       }
       >
         {filteredDiscs && filteredDiscs.map((disc, index) => renderDisc(disc, index))}
+
       </ScrollView>
+      {anyChecked && (
+      <View style={{ alignItems: 'center', width: '100%', marginBottom: 10 }}>
+        <View style={{
+          flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '95%',
+        }}
+        >
+          <Button
+            title="Delete"
+            type="Solid"
+            icon={{
+              name: 'delete',
+              type: 'material',
+              size: 25,
+              color: 'white',
+            }}
+            buttonStyle={{ backgroundColor: 'red' }}
+            titleStyle={{ fontSize: 16, color: 'white' }}
+            containerStyle={{ flex: 1 }}
+          />
+
+          <Button
+            title="Clear"
+            icon={{
+              name: 'clear',
+              type: 'material',
+              size: 25,
+              color: 'white',
+            }}
+            onPress={() => setChecked({})}
+            buttonStyle={{ backgroundColor: theme.colors.secondaryButton }}
+            titleStyle={{ fontSize: 16 }}
+            containerStyle={{ flex: 1, marginHorizontal: 5 }}
+          />
+          <Button
+            title="Send to"
+            icon={{
+              name: 'send',
+              type: 'material',
+              size: 25,
+              color: 'white',
+            }}
+            titleStyle={{ fontSize: 16 }}
+            containerStyle={{ flex: 1 }}
+          />
+        </View>
+      </View>
+      )}
     </View>
   );
 }
