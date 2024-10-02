@@ -4,7 +4,7 @@ import {
   StyleSheet, View, ScrollView, RefreshControl,
 } from 'react-native';
 import {
-  useTheme, Text, ListItem, Button,
+  useTheme, Text, ListItem, Button, Dialog,
 } from '@rneui/themed';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
@@ -19,6 +19,11 @@ export default function Page() {
   const [refreshing, setRefreshing] = useState(false);
   const [checked, setChecked] = useState({});
   const [anyChecked, setAnyChecked] = useState(false);
+  const [visible6, setVisible6] = useState(false);
+
+  const selectedDiscs = userDiscs
+    .filter((disc) => checked[disc.baboontype])
+    .sort((a, b) => a.disc.localeCompare(b.disc));
 
   const styles = StyleSheet.create({
     buttonContainer: {
@@ -130,6 +135,10 @@ export default function Page() {
     setAnyChecked(Object.values(checked).some((value) => value === true));
   }, [checked]);
 
+  const toggleDialog6 = () => {
+    setVisible6(!visible6);
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -232,6 +241,38 @@ export default function Page() {
       >
         {filteredDiscs && filteredDiscs.map((disc, index) => renderDisc(disc, index))}
 
+        <Dialog
+          isVisible={visible6}
+          onBackdropPress={toggleDialog6}
+        >
+          <Dialog.Title titleStyle={{ color: theme.colors.font }} title="Delete Discs" />
+
+          <Text style={{ marginBottom: 10 }}>
+            You sure you want to delete these discs, you baboon?
+          </Text>
+
+          {selectedDiscs.map((disc) => (
+            <Text key={disc.baboontype} style={{ fontWeight: 'bold' }}>{`${disc.disc} - ${disc.brand}`}</Text>
+          ))}
+          <View style={{ marginTop: 20 }}>
+            <Dialog.Actions>
+              <Dialog.Button
+                title="DELETE"
+                type="solid"
+                color="red"
+                onPress={() => {
+                  toggleDialog6();
+                }}
+              />
+              <Dialog.Button
+                title="CANCEL"
+                color={theme.colors.primaryButton}
+                type="solid"
+                onPress={toggleDialog6}
+              />
+            </Dialog.Actions>
+          </View>
+        </Dialog>
       </ScrollView>
       {anyChecked && (
       <View style={{ alignItems: 'center', width: '100%', marginBottom: 10 }}>
@@ -249,6 +290,7 @@ export default function Page() {
               color: 'white',
             }}
             buttonStyle={{ backgroundColor: 'red' }}
+            onPress={toggleDialog6}
             titleStyle={{ fontSize: 16, color: 'white' }}
             containerStyle={{ flex: 1 }}
           />
