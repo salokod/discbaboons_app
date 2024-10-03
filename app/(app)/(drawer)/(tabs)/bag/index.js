@@ -10,19 +10,21 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
 import { DataContext } from '../../../../../context/DataContext';
 import DeleteDiscDialog from '../../../../../components/discs/DeleteDiscDialog';
+import MoveDiscDialog from '../../../../../components/discs/MoveDiscDialog';
 
 export default function Page() {
   const { showSnackBar } = useSnackBar();
   const {
-    userBags, userDiscs, findAllDiscs, removeDiscs,
+    userBags, userDiscs, findAllDiscs, removeDiscs, sendDiscsToBag,
   } = useContext(DataContext);
   const { theme } = useTheme();
-  const [bagSelected, setBagSelected] = useState(null);
+  const [bagSelected, setBagSelected] = useState({ baboontype: null });
   const [filteredDiscs, setFilteredDiscs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [checked, setChecked] = useState({});
   const [anyChecked, setAnyChecked] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [moveDiscDialog, setMoveDiscDialog] = useState(false);
 
   const selectedDiscs = userDiscs
     .filter((disc) => checked[disc.baboontype])
@@ -121,6 +123,7 @@ export default function Page() {
     if (bagSelected) {
       const filtered = userDiscs.filter((disc) => disc.bagId === bagSelected.baboontype);
       setFilteredDiscs(filtered);
+      setChecked({});
     } else {
       setFilteredDiscs([]);
     }
@@ -130,8 +133,12 @@ export default function Page() {
     setAnyChecked(Object.values(checked).some((value) => value === true));
   }, [checked]);
 
-  const toggleDialog6 = () => {
+  const toggleDeleteDialog = () => {
     setDeleteDialog(!deleteDialog);
+  };
+
+  const toggleMoveDiscDialog = () => {
+    setMoveDiscDialog(!moveDiscDialog);
   };
 
   const onRefresh = async () => {
@@ -155,6 +162,18 @@ export default function Page() {
     } catch (error) {
       setDeleteDialog(false);
 
+      showSnackBar(error.response.data.message, 'error');
+    }
+  };
+
+  const sendDiscsFunc = async (discsToMove, selectedRadioBag) => {
+    const response = await sendDiscsToBag(discsToMove, selectedRadioBag);
+    try {
+      showSnackBar(response.data.message, 'success');
+      setMoveDiscDialog(false);
+      setChecked({});
+    } catch (error) {
+      setMoveDiscDialog(false);
       showSnackBar(error.response.data.message, 'error');
     }
   };
@@ -257,12 +276,21 @@ export default function Page() {
 
         <DeleteDiscDialog
           visible={deleteDialog}
-          onBackdropPress={toggleDialog6}
+          onBackdropPress={toggleDeleteDialog}
           theme={theme}
           selectedDiscs={selectedDiscs}
           onPress={() => {
             removeDiscsFunc(selectedDiscs);
           }}
+        />
+        <MoveDiscDialog
+          visible={moveDiscDialog}
+          onBackdropPress={toggleMoveDiscDialog}
+          theme={theme}
+          selectedDiscs={selectedDiscs}
+          userBags={userBags}
+          selectedBag={bagSelected}
+          sendDiscsFunc={sendDiscsFunc}
         />
 
       </ScrollView>
@@ -308,6 +336,7 @@ export default function Page() {
               size: 25,
               color: 'white',
             }}
+            onPress={() => setMoveDiscDialog(true)}
             titleStyle={{ fontSize: 16 }}
             containerStyle={{ flex: 1 }}
           />

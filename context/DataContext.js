@@ -222,7 +222,18 @@ export function DataProviderContext({ children }) {
       if (response.status === 200) {
         await discFunctions.findAllDiscs();
       }
+      return response;
+    },
+    sendDiscsToBag: async (newBag, selectedDiscs) => {
+      const payload = {
+        discsToMove: selectedDiscs.map((disc) => ({ baboontype: disc.baboontype })),
+        newBagId: newBag,
+      };
 
+      const response = await axios.post(`${HOSTNAME}/api/v2/protected/disc/sendtonewbag`, payload, { headers: baboonHeaders });
+      if (response.status === 200) {
+        await discFunctions.findAllDiscs();
+      }
       return response;
     },
   };
