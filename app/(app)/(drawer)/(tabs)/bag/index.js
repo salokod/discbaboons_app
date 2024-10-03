@@ -4,11 +4,12 @@ import {
   StyleSheet, View, ScrollView, RefreshControl,
 } from 'react-native';
 import {
-  useTheme, Text, ListItem, Button, Dialog,
+  useTheme, Text, ListItem, Button,
 } from '@rneui/themed';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
 import { DataContext } from '../../../../../context/DataContext';
+import DeleteDiscDialog from '../../../../../components/discs/DeleteDiscDialog';
 
 export default function Page() {
   const { showSnackBar } = useSnackBar();
@@ -242,44 +243,28 @@ export default function Page() {
         />
         )}
       </View>
-      <ScrollView refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.font} title="loading your data, you baboon...." titleColor={theme.colors.font} />
-      }
+      <ScrollView refreshControl={(
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.font}
+          title="loading your data, you baboon...."
+          titleColor={theme.colors.font}
+        />
+      )}
       >
         {filteredDiscs && filteredDiscs.map((disc, index) => renderDisc(disc, index))}
 
-        <Dialog
-          isVisible={deleteDialog}
+        <DeleteDiscDialog
+          visible={deleteDialog}
           onBackdropPress={toggleDialog6}
-        >
-          <Dialog.Title titleStyle={{ color: theme.colors.font }} title="Delete Discs" />
+          theme={theme}
+          selectedDiscs={selectedDiscs}
+          onPress={() => {
+            removeDiscsFunc(selectedDiscs);
+          }}
+        />
 
-          <Text style={{ marginBottom: 10 }}>
-            You sure you want to delete these discs, you baboon?
-          </Text>
-
-          {selectedDiscs.map((disc) => (
-            <Text key={disc.baboontype} style={{ fontWeight: 'bold' }}>{`${disc.disc} - ${disc.brand}`}</Text>
-          ))}
-          <View style={{ marginTop: 20 }}>
-            <Dialog.Actions>
-              <Dialog.Button
-                title="DELETE"
-                type="solid"
-                color="red"
-                onPress={() => {
-                  removeDiscsFunc(selectedDiscs);
-                }}
-              />
-              <Dialog.Button
-                title="CANCEL"
-                color={theme.colors.primaryButton}
-                type="solid"
-                onPress={toggleDialog6}
-              />
-            </Dialog.Actions>
-          </View>
-        </Dialog>
       </ScrollView>
       {anyChecked && (
       <View style={{ alignItems: 'center', width: '100%', marginBottom: 10 }}>
