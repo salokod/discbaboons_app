@@ -212,6 +212,19 @@ export function DataProviderContext({ children }) {
       }
       return response;
     },
+    removeDiscs: async (discArray) => {
+      const deleteDiscPayload = {
+        transitionedDiscs: discArray.map((disc) => ({ baboontype: disc.baboontype })),
+      };
+
+      const response = await axios.post(`${HOSTNAME}/api/v2/protected/disc/removediscs`, deleteDiscPayload, { headers: baboonHeaders });
+
+      if (response.status === 200) {
+        await discFunctions.findAllDiscs();
+      }
+
+      return response;
+    },
   };
 
   return (

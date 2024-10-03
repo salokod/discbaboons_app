@@ -12,14 +12,16 @@ import { DataContext } from '../../../../../context/DataContext';
 
 export default function Page() {
   const { showSnackBar } = useSnackBar();
-  const { userBags, userDiscs, findAllDiscs } = useContext(DataContext);
+  const {
+    userBags, userDiscs, findAllDiscs, removeDiscs,
+  } = useContext(DataContext);
   const { theme } = useTheme();
   const [bagSelected, setBagSelected] = useState(null);
   const [filteredDiscs, setFilteredDiscs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [checked, setChecked] = useState({});
   const [anyChecked, setAnyChecked] = useState(false);
-  const [visible6, setVisible6] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState(false);
 
   const selectedDiscs = userDiscs
     .filter((disc) => checked[disc.baboontype])
@@ -37,14 +39,6 @@ export default function Page() {
       backgroundColor: theme.colors.mainBackgroundColor,
       flex: 1,
     },
-    // contentContainer: {
-    //   alignItems: 'center',
-    //   backgroundColor: theme.colors.topBarBackground,
-    //   flex: 1,
-    //   justifyContent: 'center',
-    //   // borderStyle: 'solid',
-    //   // borderWidth: 1,
-    // },
     dropdown: {
       backgroundColor: theme.colors.mainScreenBackground,
       elevation: 2,
@@ -136,7 +130,7 @@ export default function Page() {
   }, [checked]);
 
   const toggleDialog6 = () => {
-    setVisible6(!visible6);
+    setDeleteDialog(!deleteDialog);
   };
 
   const onRefresh = async () => {
@@ -148,6 +142,19 @@ export default function Page() {
     } catch (error) {
       showSnackBar(error.response.data.message, 'error');
       setRefreshing(false);
+    }
+  };
+
+  const removeDiscsFunc = async () => {
+    const response = await removeDiscs(selectedDiscs);
+    try {
+      showSnackBar(response.data.message, 'success');
+      setDeleteDialog(false);
+      setChecked({});
+    } catch (error) {
+      setDeleteDialog(false);
+
+      showSnackBar(error.response.data.message, 'error');
     }
   };
 
@@ -242,7 +249,7 @@ export default function Page() {
         {filteredDiscs && filteredDiscs.map((disc, index) => renderDisc(disc, index))}
 
         <Dialog
-          isVisible={visible6}
+          isVisible={deleteDialog}
           onBackdropPress={toggleDialog6}
         >
           <Dialog.Title titleStyle={{ color: theme.colors.font }} title="Delete Discs" />
@@ -261,7 +268,7 @@ export default function Page() {
                 type="solid"
                 color="red"
                 onPress={() => {
-                  toggleDialog6();
+                  removeDiscsFunc(selectedDiscs);
                 }}
               />
               <Dialog.Button
@@ -290,7 +297,7 @@ export default function Page() {
               color: 'white',
             }}
             buttonStyle={{ backgroundColor: 'red' }}
-            onPress={toggleDialog6}
+            onPress={() => setDeleteDialog(true)}
             titleStyle={{ fontSize: 16, color: 'white' }}
             containerStyle={{ flex: 1 }}
           />
