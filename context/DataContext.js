@@ -1,7 +1,5 @@
 // context/DataContext.js
-import React, {
-  createContext, useState, useEffect,
-} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -236,6 +234,7 @@ export function DataProviderContext({ children }) {
       }
       return response;
     },
+    getDiscsFromDatabase: async () => axios.get(`${HOSTNAME}/api/v2/protected/disc/getdiscsfromdatabase`, { headers: baboonHeaders }),
   };
 
   return (

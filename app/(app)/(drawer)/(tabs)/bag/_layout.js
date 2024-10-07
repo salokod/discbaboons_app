@@ -1,7 +1,14 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 
-// eslint-disable-next-line no-underscore-dangle
 export default function _layout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="newDisc"
+        options={{ presentation: 'formSheet' }}
+      />
+    </Stack>
+  );
 }

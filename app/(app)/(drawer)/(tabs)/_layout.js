@@ -1,9 +1,11 @@
-import { Button, Image } from 'react-native';
+import { Image } from 'react-native';
 import React from 'react';
 import { Tabs, router } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
-import { useTheme, Text } from '@rneui/themed';
+import {
+  useTheme, Text, Button, Icon,
+} from '@rneui/themed';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import spiroLogoOutline from '../../../../assets/spiro_logo_outline.png'; // Import the image
 
@@ -13,7 +15,12 @@ export default function _layout() {
 
   return (
     <Tabs screenOptions={{
-      headerLeft: () => <DrawerToggleButton tintColor={isDark ? 'white' : 'black'} />, headerStyle: { backgroundColor: isDark ? 'black' : 'white' }, headerTitleStyle: { color: isDark ? 'white' : 'black' }, tabBarStyle: { backgroundColor: isDark ? 'black' : 'white' }, tabBarActiveTintColor: isDark ? '#ff8bcf' : '#fe00f6', tabBarInactiveTintColor: isDark ? 'white' : 'black',
+      headerLeft: () => <DrawerToggleButton tintColor={isDark ? 'white' : 'black'} />,
+      headerStyle: { backgroundColor: isDark ? 'black' : 'white' },
+      headerTitleStyle: { color: isDark ? 'white' : 'black' },
+      tabBarStyle: { backgroundColor: isDark ? 'black' : 'white' },
+      tabBarActiveTintColor: isDark ? '#ff8bcf' : '#fe00f6',
+      tabBarInactiveTintColor: isDark ? 'white' : 'black',
     }}
     >
       <Tabs.Screen
@@ -31,7 +38,18 @@ export default function _layout() {
               style={{ width: 35, height: 35 }}
             />
           ),
-          headerRight: () => <Button onPress={() => router.push('bag/new')} title="Add Post" />,
+          headerRight: () => (
+            <Button radius="sm" type="clear" titleStyle={{ color: theme.theme.colors.font, fontSize: 14 }} onPress={() => router.push('bag/newDisc')}>
+              <Text>Add</Text>
+              <Icon
+                name="add-circle"
+                type="ionicons"
+                style={{ marginLeft: 5 }}
+                color={theme.theme.colors.font}
+              />
+            </Button>
+          ),
+
         }}
       />
       <Tabs.Screen
