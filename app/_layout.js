@@ -16,6 +16,7 @@ const theme = createTheme({
     mainBackgroundColor: '#F2F2F2',
     highlightedColor: '#c0c0c0',
     baseColor: 'white',
+    gray: '#808080',
   },
   darkColors: {
     primary: '#36399a',
@@ -28,6 +29,7 @@ const theme = createTheme({
     mainBackgroundColor: '#171717',
     highlightedColor: '#2f2f2f',
     baseColor: 'black',
+    gray: '#808080',
   },
   components: {
     Button: {
