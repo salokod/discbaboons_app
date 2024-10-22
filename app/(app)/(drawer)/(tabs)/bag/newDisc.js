@@ -14,6 +14,8 @@ import ColorPicker, {
   Panel1, Swatches, HueSlider,
 } from 'reanimated-color-picker';
 import { DataContext } from '../../../../../context/DataContext';
+import { router } from 'expo-router';
+
 
 export default function Page() {
   const { theme } = useTheme();
@@ -81,7 +83,7 @@ export default function Page() {
     },
   });
   const { showSnackBar } = useSnackBar();
-  const { getDiscsFromDatabase, userBags } = useContext(DataContext);
+  const { getDiscsFromDatabase, userBags, addDiscFunc} = useContext(DataContext);
   const [discsFromDatabase, setDiscsFromDatabase] = useState([]);
   const [originalDiscs, setOriginalDiscs] = useState([]);
   const [discSelected, setDiscSelected] = useState({ baboontype: null });
@@ -93,7 +95,7 @@ export default function Page() {
   const [discTurn, setDiscTurn] = useState(null);
   const [discFade, setDiscFade] = useState(null);
   const [selectedIndex, setIndex] = useState(0);
-  const [selectedBag, setSelectedBag] = useState(null);
+  const [selectedBag, setSelectedBag] = useState(userBags[0]);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [dateOfPurchase, setDateOfPurchase] = useState(new Date());
   const [discColor, setDiscColor] = useState(theme.colors.primary);
@@ -207,6 +209,54 @@ export default function Page() {
   const turnDropdownRef = useRef(null);
   const fadeDropdownRef = useRef(null);
 
+  const handlePopulateDisc = (item) => {
+    setDiscSelected(item);
+    setDiscBrand(item.brand);
+    setDiscName(item.disc);
+    setDiscSpeed(item.speed);
+    setDiscGlide(item.glide);
+    setDiscTurn(item.turn);
+    setDiscFade(item.fade);
+    setDiscType(item.type);
+  };
+
+  const payload = {
+    bagId: selectedBag.baboontype,
+    brand: discBrand,
+    dateOfPurchase: dateOfPurchase.toISOString(),
+    disc: discName,
+    discColor,
+    discPlastic,
+    discType,
+    fade: discFade,
+    glide: discGlide,
+    speed: discSpeed,
+    turn: discTurn,
+    weight: discWeight,
+  };
+
+  const handleSaveDisc = async () => {
+    try {
+      const response = await addDiscFunc(payload);
+      if (response.status === 200) {
+
+        showSnackBar('Disc added successfully', 'success');
+        setDiscBrand('');
+        setDiscName('');
+        setDiscSpeed(null);
+        setDiscGlide(null);
+        setDiscTurn(null);
+        setDiscFade(null);
+        setDiscType(null);
+        setDiscWeight('');
+        setDiscPlastic('');
+        router.back(); // Go back to the previous screen
+      }
+    } catch (error) {
+      showSnackBar(error.response.data.message, 'error');
+    }
+  }
+
   return (
     <>
       <View style={{
@@ -241,7 +291,7 @@ export default function Page() {
               search
               value={discSelected}
               onChange={(item) => {
-                setDiscSelected(item);
+                handlePopulateDisc(item);
               }}
               renderItem={renderDisc}
               renderInputSearch={renderInputSearch}
@@ -579,6 +629,7 @@ export default function Page() {
                   || discTurn === null
                   || discFade === null
               }
+                        onPress={handleSaveDisc}
                 >
                   <Text style={{ color: 'white' }}>Save Disc</Text>
                   <Icon name="save" color="white" style={{ marginLeft: 5 }} />
