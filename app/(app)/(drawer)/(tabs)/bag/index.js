@@ -8,6 +8,7 @@ import {
 } from '@rneui/themed';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
+import { router } from 'expo-router';
 import { DataContext } from '../../../../../context/DataContext';
 import DeleteDiscDialog from '../../../../../components/discs/DeleteDiscDialog';
 import MoveDiscDialog from '../../../../../components/discs/MoveDiscDialog';
@@ -315,19 +316,58 @@ export default function Page() {
             containerStyle={{ flex: 1 }}
           />
 
-          <Button
-            title="Clear"
-            icon={{
-              name: 'clear',
-              type: 'material',
-              size: 25,
-              color: 'white',
-            }}
-            onPress={() => setChecked({})}
-            buttonStyle={{ backgroundColor: theme.colors.secondaryButton }}
-            titleStyle={{ fontSize: 16 }}
-            containerStyle={{ flex: 1, marginHorizontal: 5 }}
-          />
+          {selectedDiscs.length > 1 ? (
+            <Button
+              title="Clear"
+              icon={{
+                name: 'clear',
+                type: 'material',
+                size: 25,
+                color: 'white',
+              }}
+              onPress={() => setChecked({})}
+              buttonStyle={{ backgroundColor: theme.colors.secondaryButton }}
+              titleStyle={{ fontSize: 16 }}
+              containerStyle={{ flex: 1, marginHorizontal: 5 }}
+            />
+          )
+            : (
+              <Button
+                title="Edit"
+                icon={{
+                  name: 'clear',
+                  type: 'material',
+                  size: 25,
+                  color: 'white',
+                }}
+                onPress={() => router.push({
+                  pathname: 'bag/editDisc',
+                  params: {
+                    baboonid: selectedDiscs[0].baboonid,
+                    baboontype: selectedDiscs[0].baboontype,
+                    bagId: selectedDiscs[0].bagId,
+                    brand: selectedDiscs[0].brand,
+                    dateOfPurchase: selectedDiscs[0].dateOfPurchase,
+                    disc: selectedDiscs[0].disc,
+                    discColor: selectedDiscs[0].discColor,
+                    discPlastic: selectedDiscs[0].discPlastic,
+                    discStatus: selectedDiscs[0].discStatus,
+                    discType: selectedDiscs[0].discType,
+                    fade: selectedDiscs[0].fade,
+                    glide: selectedDiscs[0].glide,
+                    lastUsed: selectedDiscs[0].lastUsed,
+                    speed: selectedDiscs[0].speed,
+                    throws: JSON.stringify(selectedDiscs[0].throws), // Convert array to string
+                    turn: selectedDiscs[0].turn,
+                    weight: selectedDiscs[0].weight,
+                  },
+                })}
+                buttonStyle={{ backgroundColor: theme.colors.secondaryButton }}
+                titleStyle={{ fontSize: 16 }}
+                containerStyle={{ flex: 1, marginHorizontal: 5 }}
+              />
+            )}
+
           <Button
             title="Send to"
             icon={{

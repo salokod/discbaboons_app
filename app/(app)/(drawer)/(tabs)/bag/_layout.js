@@ -9,6 +9,10 @@ export default function _layout() {
         name="newDisc"
         options={{ presentation: 'formSheet' }}
       />
+      <Stack.Screen
+        name="editDisc"
+        options={{ presentation: 'formSheet' }}
+      />
     </Stack>
   );
 }

@@ -241,6 +241,13 @@ export function DataProviderContext({ children }) {
       }
       return response;
     },
+    editDiscFunc: async (payload) => {
+      const response = await axios.post(`${HOSTNAME}/api/v2/protected/disc/editdisc`, payload, { headers: baboonHeaders });
+      if (response.status === 200) {
+        await discFunctions.findAllDiscs();
+      }
+      return response;
+    },
     getDiscsFromDatabase: async () => axios.get(`${HOSTNAME}/api/v2/protected/disc/getdiscsfromdatabase`, { headers: baboonHeaders }),
   };
 

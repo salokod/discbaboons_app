@@ -2,67 +2,34 @@ import {
   View, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import React, {
-  useContext, useEffect, useState, useRef,
+  useContext, useState, useRef,
 } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useSnackBar } from 'react-native-snackbar-hook';
 import {
-  useTheme, Text, Button, Skeleton, Input, Icon, CheckBox,
+  useTheme, Text, Button, Input, Icon, CheckBox,
 } from '@rneui/themed';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ColorPicker, {
   Panel1, Swatches, HueSlider,
 } from 'reanimated-color-picker';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { DataContext } from '../../../../../context/DataContext';
 
 export default function Page() {
   const { theme } = useTheme();
+  const {
+    baboontype, bagId, brand, dateOfPurchase: purchaseDate, disc, discColor: colorOfDisc, discPlastic: discPlasticParam, discType: discTypeParam, fade, glide, speed, turn, weight,
+  } = useLocalSearchParams();
+
+  const {
+    userBags, editDiscFunc,
+  } = useContext(DataContext);
+
   const styles = StyleSheet.create({
-    buttonContainer: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.topBarBackground,
-      height: '7%',
-      justifyContent: 'center',
-      minHeight: 50,
-    },
     container: {
       backgroundColor: theme.colors.mainBackgroundColor,
       flex: 1,
-    },
-    dropdown: {
-      backgroundColor: theme.colors.mainScreenBackground,
-      elevation: 2,
-      height: '100%',
-      margin: 16,
-      padding: 12,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.41,
-      width: '100%',
-    },
-    iconStyle: {
-      height: 20,
-      width: 20,
-    },
-    inputSearchStyle: {
-      fontSize: 16,
-    },
-    item: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.mainScreenBackground,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      padding: 10,
-
-    },
-    labelText: {
-      color: theme.colors.font,
-      textAlign: 'center',
     },
     placeholderStyle: {
       color: theme.colors.font,
@@ -70,54 +37,23 @@ export default function Page() {
       marginLeft: 10,
       textAlign: 'center',
     },
-    selectedTextStyle: {
-      color: theme.colors.font,
-      fontSize: 16,
-      textAlign: 'center',
-    },
-    textItem: {
-      color: theme.colors.font,
-      flex: 1,
-      fontSize: 16,
-    },
   });
   const { showSnackBar } = useSnackBar();
-  const { getDiscsFromDatabase, userBags, addDiscFunc } = useContext(DataContext);
-  const [discsFromDatabase, setDiscsFromDatabase] = useState([]);
-  const [originalDiscs, setOriginalDiscs] = useState([]);
-  const [discSelected, setDiscSelected] = useState({ baboontype: null });
   const [loading, setLoading] = useState(false);
-  const [discBrand, setDiscBrand] = useState('');
-  const [discName, setDiscName] = useState('');
-  const [discSpeed, setDiscSpeed] = useState(null);
-  const [discGlide, setDiscGlide] = useState(null);
-  const [discTurn, setDiscTurn] = useState(null);
-  const [discFade, setDiscFade] = useState(null);
-  const [selectedIndex, setIndex] = useState(0);
-  const [selectedBag, setSelectedBag] = useState(userBags[0]);
+  const [discBrand, setDiscBrand] = useState(brand);
+  const [discName, setDiscName] = useState(disc);
+  const [discSpeed, setDiscSpeed] = useState(Number(speed));
+  const [discGlide, setDiscGlide] = useState(Number(glide));
+  const [discTurn, setDiscTurn] = useState(Number(turn));
+  const [discFade, setDiscFade] = useState(Number(fade));
+  const [selectedIndex, setIndex] = useState(userBags.findIndex((bag) => bag.baboontype === bagId));
+  const [selectedBag, setSelectedBag] = useState(userBags.find((bag) => bag.baboontype === bagId));
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [dateOfPurchase, setDateOfPurchase] = useState(new Date());
-  const [discColor, setDiscColor] = useState(theme.colors.primary);
-  const [discPlastic, setDiscPlastic] = useState('');
-  const [discType, setDiscType] = useState(null);
-  const [discWeight, setDiscWeight] = useState('');
-
-  useEffect(() => {
-    setLoading(true);
-    const fetchDiscs = async () => {
-      try {
-        const response = await getDiscsFromDatabase();
-        setDiscsFromDatabase(response.data.discs);
-        setOriginalDiscs(response.data.discs);
-      } catch (error) {
-        showSnackBar(error.response.data.message, 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDiscs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [dateOfPurchase, setDateOfPurchase] = useState(new Date(purchaseDate));
+  const [discColor, setDiscColor] = useState(colorOfDisc);
+  const [discPlastic, setDiscPlastic] = useState(discPlasticParam);
+  const [discType, setDiscType] = useState(discTypeParam);
+  const [discWeight, setDiscWeight] = useState(weight);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -130,31 +66,6 @@ export default function Page() {
   const handleConfirm = (date) => {
     setDateOfPurchase(date);
     hideDatePicker();
-  };
-
-  const renderDisc = (item) => (
-    <View style={styles.item}>
-      <Text style={[styles.textItem, styles.labelText]}>
-        {item.disc}
-        {' '}
-        -
-        {' '}
-        {item.brand}
-      </Text>
-    </View>
-  );
-
-  const customSearch = (text) => {
-    if (text) {
-      const filteredData = originalDiscs.filter((item) => {
-        const disc = item.disc ? item.disc.toLowerCase() : '';
-        const brand = item.brand ? item.brand.toLowerCase() : '';
-        return disc.includes(text.toLowerCase()) || brand.includes(text.toLowerCase());
-      });
-      setDiscsFromDatabase(filteredData);
-    } else {
-      setDiscsFromDatabase(originalDiscs);
-    }
   };
 
   const onSelectColor = ({ hex }) => {
@@ -173,19 +84,6 @@ export default function Page() {
     const value = -7 + i * 0.5;
     return { label: value.toString(), value };
   });
-
-  const renderInputSearch = () => (
-    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <Input
-        placeholder="Search disc database..."
-        onChangeText={customSearch}
-        style={styles.inputSearchStyle}
-        containerStyle={{ height: 40, backgroundColor: theme.colors.baseColor }}
-        inputContainerStyle={{ borderBottomWidth: 0 }}
-        inputStyle={{ textAlign: 'center', color: theme.colors.font }}
-      />
-    </View>
-  );
 
   const formattedDate = dateOfPurchase.toLocaleDateString('en-US', {
     month: 'long',
@@ -208,18 +106,8 @@ export default function Page() {
   const turnDropdownRef = useRef(null);
   const fadeDropdownRef = useRef(null);
 
-  const handlePopulateDisc = (item) => {
-    setDiscSelected(item);
-    setDiscBrand(item.brand);
-    setDiscName(item.disc);
-    setDiscSpeed(item.speed);
-    setDiscGlide(item.glide);
-    setDiscTurn(item.turn);
-    setDiscFade(item.fade);
-    setDiscType(item.type);
-  };
-
   const payload = {
+    baboontype,
     bagId: selectedBag.baboontype,
     brand: discBrand,
     dateOfPurchase: dateOfPurchase.toISOString(),
@@ -234,11 +122,12 @@ export default function Page() {
     weight: discWeight,
   };
 
-  const handleSaveDisc = async () => {
+  const handleEditDisc = async () => {
+    setLoading(true);
     try {
-      const response = await addDiscFunc(payload);
+      const response = await editDiscFunc(payload);
       if (response.status === 200) {
-        showSnackBar('Disc added successfully', 'success');
+        showSnackBar('Disc Edited Successfully', 'success');
         setDiscBrand('');
         setDiscName('');
         setDiscSpeed(null);
@@ -252,54 +141,25 @@ export default function Page() {
       }
     } catch (error) {
       showSnackBar(error.response.data.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
+
     <>
       <View style={{
         flex: 0.08, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.mainBackgroundColor,
       }}
       >
-        <Text style={{ fontSize: 18 }}>Add New Disc Page</Text>
+        <Text style={{ fontSize: 18 }}>Edit Disc Page</Text>
       </View>
       <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          {!loading ? (
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={discsFromDatabase}
-              maxHeight={300}
-              labelField="disc"
-              valueField="id"
-              placeholder={(
-                <View style={{
-                  flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%',
-                }}
-                >
-                  <Icon name="info" type="material" size={24} color={theme.colors.font} />
-                  <Text style={{ fontSize: 18, marginLeft: 8, textAlign: 'center' }}>Click here for pre-populated discs..</Text>
-                </View>
-            )}
-              searchPlaceholder="Search disc database..."
-              search
-              value={discSelected}
-              onChange={(item) => {
-                handlePopulateDisc(item);
-              }}
-              renderItem={renderDisc}
-              renderInputSearch={renderInputSearch}
-            />
-          ) : <Skeleton width="100%" height="100%" animation="wave" />}
-        </View>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
-          keyboardVerticalOffset={50} // Adjust this value as needed
+          keyboardVerticalOffset={50}
         >
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={{
@@ -606,7 +466,7 @@ export default function Page() {
                   placeholderStyle={{ ...styles.placeholderStyle, color: theme.colors.font }}
                   selectedTextStyle={{ fontSize: 20, textAlign: 'center', color: theme.colors.font }}
                   inputSearchStyle={{ color: theme.colors.font }}
-                  // itemTextStyle={{ color: theme.colors.font }}
+                      // itemTextStyle={{ color: theme.colors.font }}
                   data={discTypesArray}
                   maxHeight={300}
                   labelField="item"
@@ -621,16 +481,17 @@ export default function Page() {
               <View style={{ marginBottom: 20, marginTop: 40 }}>
                 <Button
                   disabled={
-                  !discBrand
-                  || !discName
-                  || discSpeed === null
-                  || discGlide === null
-                  || discTurn === null
-                  || discFade === null
-              }
-                  onPress={handleSaveDisc}
+                          !discBrand
+                          || !discName
+                          || discSpeed === null
+                          || discGlide === null
+                          || discTurn === null
+                          || discFade === null
+                          || loading === true
+                      }
+                  onPress={handleEditDisc}
                 >
-                  <Text style={{ color: 'white' }}>Save Disc</Text>
+                  <Text style={{ color: 'white' }}>Edit Disc</Text>
                   <Icon name="save" color="white" style={{ marginLeft: 5 }} />
                 </Button>
               </View>
