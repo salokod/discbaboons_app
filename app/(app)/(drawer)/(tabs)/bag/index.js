@@ -26,6 +26,7 @@ export default function Page() {
   const [anyChecked, setAnyChecked] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [moveDiscDialog, setMoveDiscDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const selectedDiscs = userDiscs
     .filter((disc) => checked[disc.baboontype])
@@ -168,6 +169,7 @@ export default function Page() {
   };
 
   const sendDiscsFunc = async (discsToMove, selectedRadioBag) => {
+    setLoading(true);
     const response = await sendDiscsToBag(discsToMove, selectedRadioBag);
     try {
       showSnackBar(response.data.message, 'success');
@@ -176,6 +178,8 @@ export default function Page() {
     } catch (error) {
       setMoveDiscDialog(false);
       showSnackBar(error.response.data.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -292,6 +296,7 @@ export default function Page() {
           userBags={userBags}
           selectedBag={bagSelected}
           sendDiscsFunc={sendDiscsFunc}
+          loading={loading}
         />
 
       </ScrollView>

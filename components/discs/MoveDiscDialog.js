@@ -3,7 +3,7 @@ import { Dialog, Text } from '@rneui/themed';
 import { View, TouchableOpacity } from 'react-native';
 
 function MoveDiscDialog({
-  visible, onBackdropPress, theme, selectedDiscs, userBags, selectedBag, sendDiscsFunc,
+  visible, onBackdropPress, theme, selectedDiscs, userBags, selectedBag, sendDiscsFunc, loading,
 }) {
   const [selectedRadioBag, setSelectedRadioBag] = useState(null);
   const updatedUserBags = userBags.filter((bag) => bag.baboontype !== selectedBag.baboontype);
@@ -55,6 +55,7 @@ function MoveDiscDialog({
       <View style={{ marginTop: 20 }}>
         <Dialog.Actions>
           <Dialog.Button
+            disabled={loading}
             title="SEND TO BAG"
             type="solid"
             color={theme.colors.primaryButton}
