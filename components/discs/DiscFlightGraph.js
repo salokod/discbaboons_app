@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Dimensions } from 'react-native';
-import Svg, { Path, Text as SvgText, Line } from 'react-native-svg';
+import Svg, {
+  Path, Text as SvgText, Line, Polygon,
+} from 'react-native-svg';
+import { useTheme } from '@rneui/themed';
 
 function DiscFlightGraph({ fade, turn }) {
+  const { theme } = useTheme();
+
   const [pathData, setPathData] = useState('');
   const { width } = Dimensions.get('window');
   const graphHeight = 400; // Adjust the height to 400
@@ -32,7 +37,7 @@ function DiscFlightGraph({ fade, turn }) {
           y1={graphHeight}
           x2={(7) * (width / 14)}
           y2="0"
-          stroke="black"
+          stroke={theme.colors.font}
           strokeWidth="1"
           strokeDasharray="3 10"
         />
@@ -49,31 +54,87 @@ function DiscFlightGraph({ fade, turn }) {
             {i}
           </SvgText>
         ))}
+        {/* Left arrow and label */}
+        <Polygon
+          points={`${(0.5) * (width / 14)},${graphHeight - 10} ${(1.5) * (width / 14)},${graphHeight - 5} ${(1.5) * (width / 14)},${graphHeight - 15}`}
+          fill={theme.colors.font}
+        />
+        <SvgText
+          x={(1) * (width / 14)}
+          y={graphHeight + 10} // Adjusted y coordinate
+          fontSize="10"
+          fill={theme.colors.font}
+          textAnchor="middle"
+            // eslint-disable-next-line react-native/no-raw-text
+        >
+          Overstable
+        </SvgText>
+        {/* Right arrow and label */}
+        <Polygon
+          points={`${(13.5) * (width / 14)},${graphHeight - 10} ${(12.5) * (width / 14)},${graphHeight - 5} ${(12.5) * (width / 14)},${graphHeight - 15}`}
+          fill={theme.colors.font}
+        />
+        <SvgText
+          x={(13) * (width / 14)}
+          y={graphHeight + 10} // Adjusted y coordinate
+          fontSize="10"
+          fill={theme.colors.font}
+          textAnchor="middle"
+          // eslint-disable-next-line react-native/no-raw-text
+        >
+          Understable
+        </SvgText>
       </Svg>
     </View>
   );
 }
+
+// const generateFlightPath = (fade, turn) => {
+//   const data = [{ x: 0, y: 0 }]; // Start with the initial point (0,0)
+//   const transitionY = 70; // Transition point at y = 70
+//   const maxY = 100; // Fixed range for y values
+//
+//   // Combined curve control points
+//   const cp1 = { x: turn, y: transitionY * 0.75 }; // Control point for the first part of the curve
+//   const cp2 = { x: -turn * 0.9, y: transitionY * 0.9 }; // Control point for the transition
+//   const end = { x: -turn - fade, y: maxY }; // End point for the curve
+//
+//   // Generate points for the combined curve using a Bezier function
+//   const numPoints = 400; // Number of points for smoother curve
+//   const points = [];
+//   for (let i = 1; i <= numPoints; i += 1) {
+//     const t = i / numPoints;
+//     const x = (1 - t) * (1 - t) * (1 - t) * data[0].x + 3 * (1 - t) * (1 - t) * t * cp1.x + 3 * (1 - t) * t * t * cp2.x + t * t * t * end.x;
+//     const y = (1 - t) * (1 - t) * (1 - t) * data[0].y + 3 * (1 - t) * (1 - t) * t * cp1.y + 3 * (1 - t) * t * t * cp2.y + t * t * t * end.y;
+//     points.push({ x, y });
+//   }
+//
+//   data.push(...points);
+//
+//   return data;
+// };
 
 const generateFlightPath = (fade, turn) => {
   const data = [{ x: 0, y: 0 }]; // Start with the initial point (0,0)
   const transitionY = 70; // Transition point at y = 70
   const maxY = 100; // Fixed range for y values
 
-  // First curve control points
-  const cp1 = { x: -turn, y: transitionY / 2 };
-  const end1 = { x: -turn, y: transitionY };
+  // Combined curve control points
+  const cp1 = { x: 0, y: transitionY * 0.3 }; // Control point for the first part of the curve (straight for 30%)
+  const cp2 = { x: -turn * 1.5, y: transitionY * 0.9 }; // Control point for the transition
+  const end = { x: -turn - fade, y: maxY }; // End point for the curve
 
-  // Generate points for the second curve using a sine function
-  const numPoints = 200; // Number of points
+  // Generate points for the combined curve using a Bezier function
+  const numPoints = 400; // Number of points for smoother curve
   const points = [];
   for (let i = 1; i <= numPoints; i += 1) {
     const t = i / numPoints;
-    const x = -turn - t * fade;
-    const y = transitionY + t * (maxY - transitionY) + Math.sin(t * Math.PI) * 5; // Reduced amplitude for smoother curve
+    const x = (1 - t) * (1 - t) * (1 - t) * data[0].x + 3 * (1 - t) * (1 - t) * t * cp1.x + 3 * (1 - t) * t * t * cp2.x + t * t * t * end.x;
+    const y = (1 - t) * (1 - t) * (1 - t) * data[0].y + 3 * (1 - t) * (1 - t) * t * cp1.y + 3 * (1 - t) * t * t * cp2.y + t * t * t * end.y;
     points.push({ x, y });
   }
 
-  data.push(cp1, end1, ...points);
+  data.push(...points);
 
   return data;
 };
