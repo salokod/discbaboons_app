@@ -15,6 +15,12 @@ import ColorPicker, {
 } from 'reanimated-color-picker';
 import { router } from 'expo-router';
 import { DataContext } from '../../../../../context/DataContext';
+import {
+  speedOptions,
+  glideOptions,
+  turnOptions,
+  fadeOptions,
+} from '../../../../../constants/discOptions';
 
 export default function Page() {
   const { theme } = useTheme();
@@ -161,18 +167,6 @@ export default function Page() {
     // do something with the selected color.
     setDiscColor(hex);
   };
-
-  const speedOptions = Array.from({ length: 13 }, (_, i) => ({ label: (i + 1).toString(), value: i + 1 }));
-  const glideOptions = Array.from({ length: 7 }, (_, i) => ({ label: (i + 1).toString(), value: i + 1 }));
-  const turnOptions = Array.from({ length: 29 }, (_, i) => {
-    const value = -7 + i * 0.5;
-    return { label: value.toString(), value };
-  });
-
-  const fadeOptions = Array.from({ length: 29 }, (_, i) => {
-    const value = -7 + i * 0.5;
-    return { label: value.toString(), value };
-  });
 
   const renderInputSearch = () => (
     <View style={{ justifyContent: 'center', alignItems: 'center' }}>

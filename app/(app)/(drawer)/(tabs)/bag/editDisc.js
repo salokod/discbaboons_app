@@ -15,6 +15,13 @@ import ColorPicker, {
 } from 'reanimated-color-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { DataContext } from '../../../../../context/DataContext';
+import DiscFlightGraph from '../../../../../components/discs/DiscFlightGraph';
+import {
+  speedOptions,
+  glideOptions,
+  turnOptions,
+  fadeOptions,
+} from '../../../../../constants/discOptions';
 
 export default function Page() {
   const { theme } = useTheme();
@@ -69,21 +76,9 @@ export default function Page() {
   };
 
   const onSelectColor = ({ hex }) => {
-    // do something with the selected color.
-    setDiscColor(hex);
+    const hexWithoutAlpha = hex.slice(0, 7); // Extract the first 7 characters including the '#'
+    setDiscColor(hexWithoutAlpha);
   };
-
-  const speedOptions = Array.from({ length: 13 }, (_, i) => ({ label: (i + 1).toString(), value: i + 1 }));
-  const glideOptions = Array.from({ length: 7 }, (_, i) => ({ label: (i + 1).toString(), value: i + 1 }));
-  const turnOptions = Array.from({ length: 29 }, (_, i) => {
-    const value = -7 + i * 0.5;
-    return { label: value.toString(), value };
-  });
-
-  const fadeOptions = Array.from({ length: 29 }, (_, i) => {
-    const value = -7 + i * 0.5;
-    return { label: value.toString(), value };
-  });
 
   const formattedDate = dateOfPurchase.toLocaleDateString('en-US', {
     month: 'long',
@@ -471,13 +466,29 @@ export default function Page() {
                   maxHeight={300}
                   labelField="item"
                   valueField="value"
-                  placeholder="Pick a disc type...."
+                  placeholder={<Text>"Pick a disc type...."</Text>}
                   value={discType}
                   onChange={(item) => {
                     setDiscType(item.value);
                   }}
                 />
               </View>
+              {discSpeed !== null && discFade !== null && discTurn !== null && (
+              <>
+                <View style={{ flex: 1, alignItems: 'flex-start',width:'93%',marginTop:20 }}>
+                  <Text style={{
+                    color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold', fontSize: 16, textAlign: 'left',
+                  }}
+                  >
+                    Baboon Vision
+                  </Text>
+                </View>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <DiscFlightGraph speed={discSpeed} fade={discFade} turn={discTurn} />
+                </View>
+              </>
+
+              )}
               <View style={{ marginBottom: 20, marginTop: 40 }}>
                 <Button
                   disabled={
@@ -495,6 +506,7 @@ export default function Page() {
                   <Icon name="save" color="white" style={{ marginLeft: 5 }} />
                 </Button>
               </View>
+
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
