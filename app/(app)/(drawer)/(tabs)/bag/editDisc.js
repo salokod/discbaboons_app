@@ -466,7 +466,7 @@ export default function Page() {
                   maxHeight={300}
                   labelField="item"
                   valueField="value"
-                  placeholder={<Text>"Pick a disc type...."</Text>}
+                  placeholder="Pick a disc type...."
                   value={discType}
                   onChange={(item) => {
                     setDiscType(item.value);
@@ -475,7 +475,10 @@ export default function Page() {
               </View>
               {discSpeed !== null && discFade !== null && discTurn !== null && (
               <>
-                <View style={{ flex: 1, alignItems: 'flex-start',width:'93%',marginTop:20 }}>
+                <View style={{
+                  flex: 1, alignItems: 'flex-start', width: '93%', marginTop: 20,
+                }}
+                >
                   <Text style={{
                     color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold', fontSize: 16, textAlign: 'left',
                   }}

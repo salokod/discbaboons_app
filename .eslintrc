@@ -28,6 +28,7 @@
     "no-underscore-dangle": "off",
     "react-native/no-color-literals": "off",
     "react/prop-types": "off",
-    "max-len": "off"
+    "max-len": "off",
+    "no-use-before-define": "off"
   }
 }

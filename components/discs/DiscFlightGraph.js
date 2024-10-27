@@ -11,6 +11,7 @@ function DiscFlightGraph({ fade, turn }) {
     const data = generateFlightPath(fade, turn);
     const pathString = dataToPath(data, width, graphHeight);
     setPathData(pathString);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fade, turn]);
 
   return (
@@ -65,7 +66,7 @@ const generateFlightPath = (fade, turn) => {
   // Generate points for the second curve using a sine function
   const numPoints = 200; // Number of points
   const points = [];
-  for (let i = 1; i <= numPoints; i++) {
+  for (let i = 1; i <= numPoints; i += 1) {
     const t = i / numPoints;
     const x = -turn - t * fade;
     const y = transitionY + t * (maxY - transitionY) + Math.sin(t * Math.PI) * 5; // Reduced amplitude for smoother curve
