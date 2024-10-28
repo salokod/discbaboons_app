@@ -1,19 +1,14 @@
 import {
-  View, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform,
+  View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import React, {
   useContext, useEffect, useState, useRef,
 } from 'react';
-import { Dropdown } from 'react-native-element-dropdown';
 import { useSnackBar } from 'react-native-snackbar-hook';
 import {
-  useTheme, Text, Button, Skeleton, Input, Icon, CheckBox,
+  useTheme, Text, Button, Input, Icon,
 } from '@rneui/themed';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import ColorPicker, {
-  Panel1, Swatches, HueSlider,
-} from 'reanimated-color-picker';
-import { router } from 'expo-router';
+
 import { DataContext } from '../../../../../context/DataContext';
 import {
   speedOptions,
@@ -21,39 +16,26 @@ import {
   turnOptions,
   fadeOptions,
 } from '../../../../../constants/discOptions';
+import DiscModalHeader from '../../../../../components/discs/DiscModalHeader';
+import DiscDropdown from '../../../../../components/discs/DiscDropdown';
+import DiscBrandInput from '../../../../../components/discs/DiscBrandInput';
+import DiscNameInput from '../../../../../components/discs/DiscNameInput';
+import DiscAttributesInput from '../../../../../components/discs/DiscAttributesInput';
+import BagSelection from '../../../../../components/discs/BagSelection'; // Import the new component
+import DateOfPurchaseInput from '../../../../../components/discs/DateOfPurchaseInput'; // Import the new component
+import DiscColorPicker from '../../../../../components/discs/DiscColorPicker'; // Import the new component
+import DiscPlasticInput from '../../../../../components/discs/DiscPlasticInput'; // Import the new component
+import DiscWeightInput from '../../../../../components/discs/DiscWeightInput';
+import DiscTypeDropdown from '../../../../../components/discs/DiscTypeDropdown';
+import BaboonVision from '../../../../../components/discs/BaboonVision';
+import {router} from "expo-router";
 
 export default function Page() {
   const { theme } = useTheme();
   const styles = StyleSheet.create({
-    buttonContainer: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.topBarBackground,
-      height: '7%',
-      justifyContent: 'center',
-      minHeight: 50,
-    },
     container: {
       backgroundColor: theme.colors.mainBackgroundColor,
       flex: 1,
-    },
-    dropdown: {
-      backgroundColor: theme.colors.mainScreenBackground,
-      elevation: 2,
-      height: '100%',
-      margin: 16,
-      padding: 12,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.41,
-      width: '100%',
-    },
-    iconStyle: {
-      height: 20,
-      width: 20,
     },
     inputSearchStyle: {
       fontSize: 16,
@@ -68,17 +50,6 @@ export default function Page() {
     },
     labelText: {
       color: theme.colors.font,
-      textAlign: 'center',
-    },
-    placeholderStyle: {
-      color: theme.colors.font,
-      fontSize: 16,
-      marginLeft: 10,
-      textAlign: 'center',
-    },
-    selectedTextStyle: {
-      color: theme.colors.font,
-      fontSize: 16,
       textAlign: 'center',
     },
     textItem: {
@@ -187,16 +158,6 @@ export default function Page() {
     year: 'numeric',
   });
 
-  const discTypesArray = [
-    'Approach',
-    'Control Driver',
-    'Distance Driver',
-    'Hybrid Driver',
-    'Midrange Driver',
-    'Putter',
-    'Putter & Approach',
-  ].map((type) => ({ item: type, value: type }));
-
   const speedDropdownRef = useRef(null);
   const glideDropdownRef = useRef(null);
   const turnDropdownRef = useRef(null);
@@ -242,7 +203,7 @@ export default function Page() {
         setDiscType(null);
         setDiscWeight('');
         setDiscPlastic('');
-        router.back(); // Go back to the previous screen
+        router.back();
       }
     } catch (error) {
       showSnackBar(error.response.data.message, 'error');
@@ -251,45 +212,16 @@ export default function Page() {
 
   return (
     <>
-      <View style={{
-        flex: 0.08, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.mainBackgroundColor,
-      }}
-      >
-        <Text style={{ fontSize: 18 }}>Add New Disc Page</Text>
-      </View>
+      <DiscModalHeader title="Add New Disc" />
       <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          {!loading ? (
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={discsFromDatabase}
-              maxHeight={300}
-              labelField="disc"
-              valueField="id"
-              placeholder={(
-                <View style={{
-                  flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%',
-                }}
-                >
-                  <Icon name="info" type="material" size={24} color={theme.colors.font} />
-                  <Text style={{ fontSize: 18, marginLeft: 8, textAlign: 'center' }}>Click here for pre-populated discs..</Text>
-                </View>
-            )}
-              searchPlaceholder="Search disc database..."
-              search
-              value={discSelected}
-              onChange={(item) => {
-                handlePopulateDisc(item);
-              }}
-              renderItem={renderDisc}
-              renderInputSearch={renderInputSearch}
-            />
-          ) : <Skeleton width="100%" height="100%" animation="wave" />}
-        </View>
+        <DiscDropdown
+          loading={loading}
+          discsFromDatabase={discsFromDatabase}
+          discSelected={discSelected}
+          handlePopulateDisc={handlePopulateDisc}
+          renderDisc={renderDisc}
+          renderInputSearch={renderInputSearch}
+        />
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
@@ -300,318 +232,75 @@ export default function Page() {
               flex: 0.9, alignItems: 'center', justifyContent: 'center', marginVertical: 10, marginBottom: 20,
             }}
             >
-              <Input
-                containerStyle={{ marginVertical: 4 }}
-                errorMessage={discBrand === '' ? 'Disc Brand is required' : ''}
-                errorStyle={{}}
-                errorProps={{}}
-                labelStyle={{ color: theme.colors.gray }}
-                labelProps={{}}
-                leftIconContainerStyle={{}}
-                rightIcon={<Icon name="close" size={20} onPress={() => setDiscBrand('')} />}
-                rightIconContainerStyle={{}}
-                value={discBrand}
-                placeholder="Disc Brand"
-                onChangeText={(text) => setDiscBrand(text)}
-                label={discBrand === '' ? null : 'Disc Brand'}
+              <DiscBrandInput discBrand={discBrand} setDiscBrand={setDiscBrand} theme={theme} />
+              <DiscNameInput discName={discName} setDiscName={setDiscName} theme={theme} />
+              <DiscAttributesInput
+                theme={theme}
+                styles={styles}
+                speedOptions={speedOptions}
+                glideOptions={glideOptions}
+                turnOptions={turnOptions}
+                fadeOptions={fadeOptions}
+                discSpeed={discSpeed}
+                setDiscSpeed={setDiscSpeed}
+                discGlide={discGlide}
+                setDiscGlide={setDiscGlide}
+                discTurn={discTurn}
+                setDiscTurn={setDiscTurn}
+                discFade={discFade}
+                setDiscFade={setDiscFade}
+                speedDropdownRef={speedDropdownRef}
+                glideDropdownRef={glideDropdownRef}
+                turnDropdownRef={turnDropdownRef}
+                fadeDropdownRef={fadeDropdownRef}
               />
 
-              <Input
-                containerStyle={{ marginVertical: 4 }}
-                errorMessage={discName === '' ? 'Disc Name is required' : ''}
-                errorStyle={{}}
-                errorProps={{}}
-                labelStyle={{ color: theme.colors.gray }}
-                labelProps={{}}
-                leftIconContainerStyle={{}}
-                rightIcon={<Icon name="close" size={20} onPress={() => setDiscName('')} />}
-                rightIconContainerStyle={{}}
-                value={discName}
-                placeholder="Disc Name"
-                onChangeText={(text) => setDiscName(text)}
-                textContentType="none"
-                label={discName === '' ? null : 'Disc Name'}
+              <BagSelection
+                theme={theme}
+                userBags={userBags}
+                selectedIndex={selectedIndex}
+                setIndex={setIndex}
+                setSelectedBag={setSelectedBag}
               />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around', margin: 16 }}>
-                <View style={{ alignItems: 'flex-start', marginHorizontal: 8 }}>
-                  <Text style={{ color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold' }}>Speed</Text>
-                  <TouchableOpacity onPress={() => speedDropdownRef.current.open()}>
-                    <Dropdown
-                      ref={speedDropdownRef}
-                      style={{
-                        backgroundColor: theme.colors.mainScreenBackground,
-                        elevation: 2,
-                        padding: 12,
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 1,
-                        },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 1.41,
-                        width: 120, // Increase width to 120
-                        height: 120, // Increase height to 120
-                      }}
-                      placeholderStyle={styles.placeholderStyle}
-                      selectedTextStyle={{ fontSize: 32, textAlign: 'center', color: theme.colors.font }}
-                      data={speedOptions}
-                      maxHeight={300}
-                      labelField="label"
-                      valueField="value"
-                      placeholder=""
-                      value={discSpeed}
-                      onChange={(item) => {
-                        setDiscSpeed(item.value);
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={{ alignItems: 'flex-start', marginHorizontal: 8 }}>
-                  <Text style={{ color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold' }}>Glide</Text>
-                  <TouchableOpacity onPress={() => glideDropdownRef.current.open()}>
-                    <Dropdown
-                      ref={glideDropdownRef}
-                      style={{
-                        backgroundColor: theme.colors.mainScreenBackground,
-                        elevation: 2,
-                        padding: 12,
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 1,
-                        },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 1.41,
-                        width: 120, // Increase width to 120
-                        height: 120, // Increase height to 120
-                      }}
-                      placeholderStyle={styles.placeholderStyle}
-                      selectedTextStyle={{ fontSize: 32, textAlign: 'center', color: theme.colors.font }}
-                      data={glideOptions}
-                      maxHeight={300}
-                      labelField="label"
-                      valueField="value"
-                      placeholder=""
-                      value={discGlide}
-                      onChange={(item) => {
-                        setDiscGlide(item.value);
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around', margin: 16 }}>
-                <View style={{ alignItems: 'flex-start', marginHorizontal: 8 }}>
-                  <Text style={{ color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold' }}>Turn</Text>
-                  <TouchableOpacity onPress={() => turnDropdownRef.current.open()}>
-                    <Dropdown
-                      ref={turnDropdownRef}
-                      style={{
-                        backgroundColor: theme.colors.mainScreenBackground,
-                        elevation: 2,
-                        padding: 12,
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 1,
-                        },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 1.41,
-                        width: 120, // Increase width to 120
-                        height: 120, // Increase height to 120
-                      }}
-                      placeholderStyle={styles.placeholderStyle}
-                      selectedTextStyle={{ fontSize: 32, textAlign: 'center', color: theme.colors.font }}
-                      data={turnOptions}
-                      maxHeight={300}
-                      labelField="label"
-                      valueField="value"
-                      placeholder=""
-                      value={discTurn}
-                      onChange={(item) => {
-                        setDiscTurn(item.value);
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={{ alignItems: 'flex-start', marginHorizontal: 8 }}>
-                  <Text style={{ color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold' }}>Fade</Text>
-                  <TouchableOpacity onPress={() => fadeDropdownRef.current.open()}>
-                    <Dropdown
-                      ref={fadeDropdownRef}
-                      style={{
-                        backgroundColor: theme.colors.mainScreenBackground,
-                        elevation: 2,
-                        padding: 12,
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 1,
-                        },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 1.41,
-                        width: 120, // Increase width to 120
-                        height: 120, // Increase height to 120
-                      }}
-                      placeholderStyle={styles.placeholderStyle}
-                      selectedTextStyle={{ fontSize: 32, textAlign: 'center', color: theme.colors.font }}
-                      data={fadeOptions}
-                      maxHeight={300}
-                      labelField="label"
-                      valueField="value"
-                      placeholder=""
-                      value={discFade}
-                      onChange={(item) => {
-                        setDiscFade(item.value);
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View style={{
-                justifyContent: 'center', alignItems: 'flex-start', width: '92%', marginVertical: 10,
-              }}
-              >
-                <Text style={{
-                  color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold', fontSize: 16,
-                }}
-                >
-                  Choose Bag:
-                </Text>
-
-                <View style={{ backgroundColor: theme.colors.mainScreenBackground, width: '100%' }}>
-                  {userBags.map((bag, index) => (
-                    <CheckBox
-                      key={bag.baboontype}
-                      checked={selectedIndex === index}
-                      onPress={() => {
-                        setIndex(index);
-                        setSelectedBag(bag);
-                      }}
-                      containerStyle={{ backgroundColor: theme.colors.mainScreenBackground, marginVertical: 0 }}
-                      checkedIcon="dot-circle-o"
-                      uncheckedIcon="circle-o"
-                      checkedColor={theme.colors.secondaryButton}
-                      title={bag.bagName}
-                    />
-                  ))}
-
-                </View>
-                {selectedIndex === null && <Text style={{ color: 'red', fontSize: 12 }}>Please select a bag</Text>}
-              </View>
-              <View style={{
-                justifyContent: 'center', alignItems: 'flex-start', width: '92%', marginVertical: 10,
-              }}
-              >
-                <Text style={{
-                  color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold', fontSize: 16,
-                }}
-                >
-                  Date of Purchase:
-                </Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%' }}>
-                <TouchableOpacity onPress={showDatePicker} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{
-                    fontSize: 26, textAlign: 'left', marginRight: 8, marginLeft: 15,
-                  }}
-                  >
-                    {formattedDate}
-                  </Text>
-                  <Icon name="edit" type="material" size={24} color={theme.colors.secondaryButton} />
-                </TouchableOpacity>
-              </View>
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
+              <DateOfPurchaseInput
+                theme={theme}
+                formattedDate={formattedDate}
+                showDatePicker={showDatePicker}
+                isDatePickerVisible={isDatePickerVisible}
+                handleConfirm={handleConfirm}
+                hideDatePicker={hideDatePicker}
               />
 
-              <View style={{
-                justifyContent: 'center', alignItems: 'flex-start', width: '92%', marginTop: 20, marginBottom: 10,
-              }}
-              >
-                <Text style={{
-                  color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold', fontSize: 16,
-                }}
-                >
-                  Choose Disc Color:
-                </Text>
-                <View style={{ alignItems: 'center', width: '100%', marginTop: 10 }}>
-                  <ColorPicker style={{ width: '70%' }} value={discColor} onComplete={onSelectColor}>
-                    <Panel1 />
-                    <HueSlider style={{ marginVertical: 10 }} />
-                    <Swatches />
-                  </ColorPicker>
-                </View>
-              </View>
-              <Input
-                containerStyle={{ marginVertical: 4 }}
-                errorStyle={{}}
-                errorProps={{}}
-                labelStyle={{ color: theme.colors.gray }}
-                labelProps={{}}
-                leftIconContainerStyle={{}}
-                rightIcon={<Icon name="close" size={20} onPress={() => setDiscPlastic('')} />}
-                rightIconContainerStyle={{}}
-                value={discPlastic}
-                placeholder="Disc Plastic"
-                onChangeText={(text) => setDiscPlastic(text)}
-                label={discPlastic === '' ? null : 'Disc Plastic'}
+              <DiscColorPicker
+                theme={theme}
+                discColor={discColor}
+                onSelectColor={onSelectColor}
               />
-              <Input
-                containerStyle={{ marginVertical: 4 }}
-                errorStyle={{}}
-                errorProps={{}}
-                labelStyle={{ color: theme.colors.gray }}
-                labelProps={{}}
-                leftIconContainerStyle={{}}
-                rightIcon={<Icon name="close" size={20} onPress={() => setDiscWeight('')} />}
-                rightIconContainerStyle={{}}
-                value={discWeight}
-                placeholder="Disc Weight"
-                onChangeText={(text) => setDiscWeight(text)}
-                label={discWeight === '' ? null : 'Disc Weight'}
+
+              <DiscPlasticInput
+                theme={theme}
+                discPlastic={discPlastic}
+                setDiscPlastic={setDiscPlastic}
               />
-              <View style={{ alignItems: 'flex-start', marginHorizontal: 8, width: '93%' }}>
-                <Text style={{
-                  color: theme.colors.gray, marginBottom: 4, fontWeight: 'bold', fontSize: 16,
-                }}
-                >
-                  Disc Type
-                </Text>
-                <Dropdown
-                  style={{
-                    backgroundColor: theme.colors.mainScreenBackground,
-                    elevation: 2,
-                    padding: 12,
-                    shadowColor: '#000',
-                    shadowOffset: {
-                      width: 0,
-                      height: 1,
-                    },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 1.41,
-                    width: '100%',
-                  }}
-                  dropdownPosition="top"
-                  placeholderStyle={{ ...styles.placeholderStyle, color: theme.colors.font }}
-                  selectedTextStyle={{ fontSize: 20, textAlign: 'center', color: theme.colors.font }}
-                  inputSearchStyle={{ color: theme.colors.font }}
-                  // itemTextStyle={{ color: theme.colors.font }}
-                  data={discTypesArray}
-                  maxHeight={300}
-                  labelField="item"
-                  valueField="value"
-                  placeholder="Pick a disc type...."
-                  value={discType}
-                  onChange={(item) => {
-                    setDiscType(item.value);
-                  }}
-                />
-              </View>
+              <DiscWeightInput
+                theme={theme}
+                discWeight={discWeight}
+                setDiscWeight={setDiscWeight}
+              />
+              <DiscTypeDropdown
+                theme={theme}
+                styles={styles}
+                discType={discType}
+                setDiscType={setDiscType}
+              />
+              {discSpeed !== null && discFade !== null && discTurn !== null && (
+              <BaboonVision
+                theme={theme}
+                discSpeed={discSpeed}
+                discFade={discFade}
+                discTurn={discTurn}
+              />
+              )}
               <View style={{ marginBottom: 20, marginTop: 40 }}>
                 <Button
                   disabled={
