@@ -9,6 +9,7 @@ import {
   useTheme, Text, Button, Input, Icon,
 } from '@rneui/themed';
 
+import { router } from 'expo-router';
 import { DataContext } from '../../../../../context/DataContext';
 import {
   speedOptions,
@@ -28,7 +29,6 @@ import DiscPlasticInput from '../../../../../components/discs/DiscPlasticInput';
 import DiscWeightInput from '../../../../../components/discs/DiscWeightInput';
 import DiscTypeDropdown from '../../../../../components/discs/DiscTypeDropdown';
 import BaboonVision from '../../../../../components/discs/BaboonVision';
-import {router} from "expo-router";
 
 export default function Page() {
   const { theme } = useTheme();

@@ -102,7 +102,8 @@ export default function Page() {
       fontWeight: 'bold',
       margin: 2,
       // minWidth: 40,
-      padding: 10,
+      paddingHorizontal: 8,
+      paddingVertical: 10,
       textAlign: 'center', // Ensure enough width for two-digit numbers
     },
     textItem: {
