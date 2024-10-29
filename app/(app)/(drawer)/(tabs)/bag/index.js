@@ -1,17 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Dropdown } from 'react-native-element-dropdown';
 import {
   StyleSheet, View, ScrollView, RefreshControl,
 } from 'react-native';
 import {
   useTheme, Text, ListItem, Button,
 } from '@rneui/themed';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSnackBar } from 'react-native-snackbar-hook';
 import { router } from 'expo-router';
 import { DataContext } from '../../../../../context/DataContext';
 import DeleteDiscDialog from '../../../../../components/discs/DeleteDiscDialog';
 import MoveDiscDialog from '../../../../../components/discs/MoveDiscDialog';
+import BagDropdown from '../../../../../components/bag/BagDropdown';
 
 export default function Page() {
   const { showSnackBar } = useSnackBar();
@@ -33,63 +32,13 @@ export default function Page() {
     .sort((a, b) => a.disc.localeCompare(b.disc));
 
   const styles = StyleSheet.create({
-    buttonContainer: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.topBarBackground,
-      height: '7%',
-      justifyContent: 'center',
-      minHeight: 50,
-    },
     container: {
       backgroundColor: theme.colors.mainBackgroundColor,
       flex: 1,
     },
-    dropdown: {
-      backgroundColor: theme.colors.mainScreenBackground,
-      elevation: 2,
-      height: '100%',
-      margin: 16,
-      padding: 12,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.41,
-      width: '100%',
-    },
-    iconStyle: {
-      height: 20,
-      width: 20,
-    },
-    inputSearchStyle: {
-      fontSize: 16,
-      height: 40,
-    },
-    item: {
-      alignItems: 'center',
-      backgroundColor: theme.colors.mainScreenBackground,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      padding: 10,
-
-    },
-    labelText: {
-      color: theme.colors.font,
-      textAlign: 'center',
-    },
     listItemContainer: {
       marginRight: 20,
       width: '100%',
-    },
-    placeholderStyle: {
-      fontSize: 16,
-    },
-    selectedTextStyle: {
-      color: theme.colors.font,
-      fontSize: 16,
-      textAlign: 'center',
     },
     subtitleText: {
       fontSize: 12, // Adjust the font size as needed
@@ -105,11 +54,6 @@ export default function Page() {
       paddingHorizontal: 8,
       paddingVertical: 10,
       textAlign: 'center', // Ensure enough width for two-digit numbers
-    },
-    textItem: {
-      color: theme.colors.font,
-      flex: 1,
-      fontSize: 16,
     },
   });
 
@@ -184,12 +128,6 @@ export default function Page() {
     }
   };
 
-  const renderBag = (item) => (
-    <View style={styles.item}>
-      <Text style={[styles.textItem, styles.labelText]}>{item.bagName}</Text>
-    </View>
-  );
-
   const handleCheck = (item) => {
     setChecked((prevChecked) => ({
       ...prevChecked,
@@ -244,30 +182,7 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
-        {userBags && (
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={userBags}
-          maxHeight={300}
-          labelField="bagName"
-          valueField="baboontype"
-          placeholder="Select item"
-          searchPlaceholder="Search..."
-          value={bagSelected}
-          onChange={(item) => {
-            setBagSelected(item);
-          }}
-          renderLeftIcon={() => (
-            <MaterialIcons name="backpack" size={24} color={theme.colors.font} />)}
-          renderItem={renderBag}
-        />
-        )}
-      </View>
+      <BagDropdown bagSelected={bagSelected} userBags={userBags} setBagSelected={setBagSelected} theme={theme} />
       <ScrollView refreshControl={(
         <RefreshControl
           refreshing={refreshing}

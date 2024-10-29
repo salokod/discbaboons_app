@@ -38,7 +38,7 @@ function DiscTypeDropdown({
           shadowRadius: 1.41,
           width: '100%',
         }}
-        dropdownPosition="top"
+        dropdownPosition="auto"
         placeholderStyle={{ ...styles.placeholderStyle, color: theme.colors.font }}
         selectedTextStyle={{ fontSize: 20, textAlign: 'center', color: theme.colors.font }}
         inputSearchStyle={{ color: theme.colors.font }}

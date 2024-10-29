@@ -23,7 +23,7 @@ function DateOfPurchaseInput({
       <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%' }}>
         <TouchableOpacity onPress={showDatePicker} style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{
-            fontSize: 26, textAlign: 'left', marginRight: 8, marginLeft: 15,
+            fontSize: 26, textAlign: 'left', marginRight: 8, marginLeft: 15, color: theme.colors.font,
           }}
           >
             {formattedDate}

@@ -1,16 +1,20 @@
 import {
-  View, Text, StyleSheet,
+  View, Text, StyleSheet, Image,
 } from 'react-native';
 import React, { useContext } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {
-  Feather, AntDesign, MaterialIcons, Ionicons,
+  Feather, AntDesign, Ionicons,
 } from '@expo/vector-icons';
 import { router, usePathname } from 'expo-router';
-import { useThemeMode, useTheme } from '@rneui/themed';
+import {
+  useThemeMode, useTheme,
+} from '@rneui/themed';
 import { StatusBar } from 'expo-status-bar';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { DataContext } from '../../../context/DataContext';
+import spiroLogoOutline from '../../../assets/spiro_logo_outline.png';
 
 const styles = StyleSheet.create({
   navItemLabel: {
@@ -96,15 +100,16 @@ function CustomDrawerContent(props) {
       <DrawerItem
           // eslint-disable-next-line max-len
           // eslint-disable-next-line react-native/no-color-literals, react/no-unstable-nested-components, max-len
-        icon={({ size }) => <MaterialIcons name="favorite-outline" size={size} color={pathname === '/favourites' ? '#fff' : '#000'} />}
-        label="Favourites"
+        icon={({ size }) => <MaterialCommunityIcons name="chart-scatter-plot" size={size} color={pathname === '/baboonview' ? '#fff' : '#000'} />}
+        label="Baboon View"
           // eslint-disable-next-line react-native/no-color-literals
-        labelStyle={[styles.navItemLabel, { color: pathname === '/favourites' ? '#fff' : '#000' }]}
+        labelStyle={[styles.navItemLabel, { color: pathname === '/baboonview' ? '#fff' : '#000' }]}
           // eslint-disable-next-line react-native/no-color-literals
-        style={{ backgroundColor: pathname === '/favourites' ? '#333' : '#fff' }}
+        style={{ backgroundColor: pathname === '/baboonview' ? '#333' : '#fff' }}
         onPress={() => {
-          router.push('/favourites');
+          router.push('/baboonview');
         }}
+
       />
       <DrawerItem
           // eslint-disable-next-line react/no-unstable-nested-components
@@ -158,8 +163,36 @@ export default function Layout() {
         headerShown: false, headerStyle: { backgroundColor: isDark ? 'black' : 'white' }, headerTitleStyle: { color: isDark ? 'white' : 'black' }, headerTintColor: isDark ? 'white' : 'black',
       }}
     >
-      <Drawer.Screen name="favourites" options={{ headerShown: true }} />
-      <Drawer.Screen name="settings" options={{ headerShown: true }} />
+      <Drawer.Screen
+        name="baboonview"
+        options={{
+          headerShown: true,
+          // eslint-disable-next-line react/no-unstable-nested-components
+          headerTitle: () => (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={spiroLogoOutline}
+                style={{ width: 35, height: 35 }}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="settings"
+        options={{
+          headerShown: true,
+          // eslint-disable-next-line react/no-unstable-nested-components
+          headerTitle: () => (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={spiroLogoOutline}
+                style={{ width: 35, height: 35 }}
+              />
+            </View>
+          ),
+        }}
+      />
     </Drawer>
   );
 }

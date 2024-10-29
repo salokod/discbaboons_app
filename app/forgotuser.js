@@ -29,7 +29,8 @@ export default function Page() {
 
   useEffect(() => {
     setMode(savedTheme);
-  }, [savedTheme, setMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedTheme]);
 
   const handleUserRequest = async () => {
     try {

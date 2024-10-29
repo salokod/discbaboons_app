@@ -49,7 +49,6 @@ export default function _layout() {
               />
             </Button>
           ),
-
         }}
       />
       <Tabs.Screen
