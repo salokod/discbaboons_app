@@ -100,7 +100,7 @@ export default function Baboonview() {
               <SvgText
                 x={width / 2}
                 y={(height * 0.72 * 0.72)} // Adjusted y coordinate to move the text even closer to the image
-                fontSize="24"
+                fontSize="22"
                 fontWeight="bold"
                 fill={theme.colors.secondaryButton}
                 textAnchor="middle"
@@ -110,21 +110,20 @@ export default function Baboonview() {
                 Baboon View
               </SvgText>
               {/* X and Y axis */}
-              <Line x1="0" y1={height * 0.72 - 1} x2={width} y2={height * 0.72 - 1} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="5,5" />
-              <Line x1={width / 2} y1="0" x2={width / 2} y2={height * 0.72} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="5,5" />
+              <Line x1="0" y1={height * 0.72 - 1} x2={width} y2={height * 0.72 - 1} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="2,20" />
+              <Line x1={width / 2} y1="0" x2={width / 2} y2={height * 0.72} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="2,20" />
               {[1, 3, 5, 7, 9, 11, 13, 15].map((i) => (
-                <SvgText
-                  key={i}
-                  x={width / 2 + 5} // Adjust x coordinate to position the text slightly to the right of the y-axis line
-                  // eslint-disable-next-line no-mixed-operators
-                  y={height * 0.72 - (i * (height * 0.72 / 15))}
-                  fontSize="14"
-                  fill={theme.colors.font}
-                  textAnchor="start"
-                  opacity="0.7"
-                >
-                  {i}
-                </SvgText>
+                  <SvgText
+                      key={i}
+                      x={width / 2} // Set x coordinate to the middle of the x-axis
+                      y={height * 0.72 - (i * (height * 0.72 / 15))}
+                      fontSize="14"
+                      fill={theme.colors.font}
+                      textAnchor="middle" // Center the text horizontally
+                      opacity="0.5"
+                  >
+                    {i}
+                  </SvgText>
               ))}
 
               {Object.entries(groupedDiscs).map(([key, discs]) => {
