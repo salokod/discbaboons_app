@@ -112,6 +112,21 @@ export default function Baboonview() {
               {/* X and Y axis */}
               <Line x1="0" y1={height * 0.72 - 1} x2={width} y2={height * 0.72 - 1} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="5,5" />
               <Line x1={width / 2} y1="0" x2={width / 2} y2={height * 0.72} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="5,5" />
+              {[1, 3, 5, 7, 9, 11, 13, 15].map((i) => (
+                <SvgText
+                  key={i}
+                  x={width / 2 + 5} // Adjust x coordinate to position the text slightly to the right of the y-axis line
+                  // eslint-disable-next-line no-mixed-operators
+                  y={height * 0.72 - (i * (height * 0.72 / 15))}
+                  fontSize="14"
+                  fill={theme.colors.font}
+                  textAnchor="start"
+                  opacity="0.7"
+                >
+                  {i}
+                </SvgText>
+              ))}
+
               {Object.entries(groupedDiscs).map(([key, discs]) => {
                 const [cx, cy] = key.split(',').map(Number);
                 let label = discs.length > 1 ? `${discs.length} discs` : discs[0].disc;
@@ -122,14 +137,6 @@ export default function Baboonview() {
                 const color = discs.length > 1 ? theme.colors.secondaryButton : discs[0].discColor;
                 return (
                   <G key={discKey}>
-                    <Circle
-                      cx={cx}
-                      cy={cy}
-                      r="10"
-                      fill={color}
-                      stroke={theme.colors.font} // Add border color
-                      strokeWidth="2"
-                    />
                     <SvgText
                       x={cx}
                       y={cy + 22}
@@ -140,6 +147,14 @@ export default function Baboonview() {
                     >
                       {label}
                     </SvgText>
+                    <Circle
+                      cx={cx}
+                      cy={cy}
+                      r="10"
+                      fill={color}
+                      stroke={theme.colors.font} // Add border color
+                      strokeWidth="2"
+                    />
                   </G>
                 );
               })}
