@@ -30,6 +30,7 @@
     "react/prop-types": "off",
     "max-len": "off",
     "no-use-before-define": "off",
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/exhaustive-deps": "off",
+    "no-restricted-globals": "off"
   }
 }

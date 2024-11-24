@@ -1,9 +1,9 @@
 import {
-  View, StyleSheet, ScrollView, RefreshControl,
+  View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  useTheme, Text, ListItem,
+  useTheme, Text, ListItem, Icon,
 } from '@rneui/themed';
 import { useSnackBar } from 'react-native-snackbar-hook';
 import { DataContext } from '../../../../context/DataContext';
@@ -17,6 +17,7 @@ export default function Page() {
 
   const [combinedData, setCombinedData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [expandedRound, setExpandedRound] = useState(null);
 
   const styles = StyleSheet.create({
     container: {
@@ -52,6 +53,19 @@ export default function Page() {
       // minWidth: 40,
       paddingHorizontal: 8,
       paddingVertical: 10,
+      textAlign: 'center', // Ensure enough width for two-digit numbers
+    },
+    viewMoreBox: {
+      // backgroundColor: theme.colors.mainScreenBackground,
+      color: theme.colors.font,
+      flex: 1,
+      fontSize: 14,
+      fontWeight: 'normal',
+      margin: 2,
+      marginTop: 10,
+      // minWidth: 40,
+      paddingHorizontal: 8,
+      // paddingVertical: 10,
       textAlign: 'center', // Ensure enough width for two-digit numbers
     },
   });
@@ -133,27 +147,78 @@ export default function Page() {
             ]}
             key={round.baboontype}
           >
-            <ListItem.Content style={{ flexDirection: 'row', width: '100%' }}>
-              <View style={{ flex: 0.9 }}>
-                <ListItem.Title numberOfLines={1} ellipsizeMode="tail" style={{ fontWeight: 'bold' }}>{round.roundName}</ListItem.Title>
-                <ListItem.Subtitle style={styles.subtitleText} numberOfLines={1} ellipsizeMode="tail">{round.roundData.parkName}</ListItem.Subtitle>
-                <ListItem.Subtitle style={styles.subtitleText} numberOfLines={1} ellipsizeMode="tail">{round.dateOfRound}</ListItem.Subtitle>
-              </View>
-              <View style={{ flex: 0.5 }}>
-                <View style={{
-                  flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center',
-                }}
-                >
-                  <Text style={styles.textBox} numberOfLines={1}>
-                    {round.betData ? `${round.betData[`${round.baboonid}_money`] < 0 ? '-' : ''}$${Math.abs(round.betData[`${round.baboonid}_money`])}` : '--'}
-                  </Text>
-                  <Text style={styles.scoreBox} numberOfLines={1}>
-                    {Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) === 0
-                      ? <Text style={{ fontSize: 15 }}>Even</Text>
-                      : `${Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) > 0 ? '+' : ''}${Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`])}`}
-                  </Text>
+            <ListItem.Content style={{ flexDirection: 'column', width: '100%' }}>
+              <View style={{ flexDirection: 'row', width: '100%' }}>
+                <View style={{ flex: 0.6 }}>
+                  <ListItem.Title numberOfLines={1} ellipsizeMode="tail" style={{ fontWeight: 'bold' }}>{round.roundName}</ListItem.Title>
+                  <ListItem.Subtitle style={styles.subtitleText} numberOfLines={1} ellipsizeMode="tail">{round.roundData.parkName}</ListItem.Subtitle>
+                  <ListItem.Subtitle style={styles.subtitleText} numberOfLines={1} ellipsizeMode="tail">{round.dateOfRound}</ListItem.Subtitle>
+                </View>
+                <View style={{ flex: 0.4 }}>
+                  <View style={{
+                    flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center',
+                  }}
+                  >
+                    <Text style={styles.textBox} numberOfLines={1}>
+                      {round.betData ? `${isNaN(round.betData[`${round.baboonid}_money`]) ? '--' : `${round.betData[`${round.baboonid}_money`] < 0 ? '-' : ''}$${Math.abs(round.betData[`${round.baboonid}_money`]).toFixed(2)}`}` : '--'}
+                    </Text>
+                    <Text style={styles.scoreBox} numberOfLines={1}>
+                      {Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) === 0
+                        ? <Text style={{ fontSize: 15 }}>Even</Text>
+                        : `${Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) > 0 ? '+' : ''}${Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`])}`}
+                    </Text>
+                  </View>
                 </View>
               </View>
+              { round.otherBaboons.length > 0 && (
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center',
+                }}
+                onPress={() => setExpandedRound(expandedRound === round.baboontype ? null : round.baboontype)}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={[styles.viewMoreBox, { marginRight: 5, flex: 0 }]}>
+                    {expandedRound === round.baboontype ? 'Close' : `${round.otherBaboons.length} other baboon${round.otherBaboons.length === 1 ? '' : 's'}`}
+                  </Text>
+                  <Icon name={expandedRound === round.baboontype ? 'angle-up' : 'angle-down'} type="font-awesome" color={theme.colors.font} style={{ marginTop: 4 }} />
+                </View>
+              </TouchableOpacity>
+              )}
+              {expandedRound === round.baboontype && (
+              <View style={{
+                flexDirection: 'column', width: '100%', alignItems: 'center', justifyContent: 'center',
+              }}
+              >
+                {round.otherBaboons.map((otherBaboon) => (
+                  <View
+                    style={{
+                      flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center',
+                    }}
+                    key={otherBaboon.baboonFriendId}
+                  >
+                    <Text
+                      key={otherBaboon.baboonFriendUsername}
+                      style={{
+                        textAlign: 'left', width: '60%', fontSize: 16, fontWeight: 'bold',
+                      }}
+                    >
+                      {otherBaboon.baboonFriendUsername}
+                    </Text>
+                    <Text style={styles.textBox}>
+                      {isNaN(round.betData[`${otherBaboon.baboonFriendId}_money`])
+                        ? '--'
+                        : `${round.betData[`${otherBaboon.baboonFriendId}_money`] < 0 ? '-' : ''}$${Math.abs(round.betData[`${otherBaboon.baboonFriendId}_money`]).toFixed(2)}`}
+                    </Text>
+                    <Text style={styles.scoreBox}>
+                      {Number(round.scoreInfo[`${otherBaboon.baboonFriendId}_score`]) - Number(round.scoreInfo[`${otherBaboon.baboonFriendId}_par`]) === 0
+                        ? <Text style={{ fontSize: 15 }}>Even</Text>
+                        : `${Number(round.scoreInfo[`${otherBaboon.baboonFriendId}_score`]) - Number(round.scoreInfo[`${otherBaboon.baboonFriendId}_par`]) > 0 ? '+' : ''}${Number(round.scoreInfo[`${otherBaboon.baboonFriendId}_score`]) - Number(round.scoreInfo[`${otherBaboon.baboonFriendId}_par`])}`}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              )}
             </ListItem.Content>
           </ListItem>
         ))}
