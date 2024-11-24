@@ -23,6 +23,8 @@ export function DataProviderContext({ children }) {
   const [passwordResetTTL, setPasswordResetTTL] = useState(null);
   const [userBags, setUserBags] = useState([]);
   const [userDiscs, setUserDiscs] = useState([]);
+  const [userRounds, setUserRounds] = useState([]);
+  const [userBets, setUserBets] = useState([]);
 
   const isTokenExpired = () => {
     const currentUnixTime = Math.floor(Date.now() / 1000);
@@ -251,6 +253,25 @@ export function DataProviderContext({ children }) {
     getDiscsFromDatabase: async () => axios.get(`${HOSTNAME}/api/v2/protected/disc/getdiscsfromdatabase`, { headers: baboonHeaders }),
   };
 
+  const roundFunctions = {
+    getRounds: async () => {
+      const response = await axios.get(`${HOSTNAME}/api/v2/protected/round/getrounds`, { headers: baboonHeaders });
+      if (response.status === 200) {
+        setUserRounds(response.data.rounds.Items);
+        AsyncStorage.setItem('userRounds', JSON.stringify(response.data.rounds.Items));
+      }
+      return response.data.rounds.Items;
+    },
+    getBets: async () => {
+      const response = await axios.get(`${HOSTNAME}/api/v2/protected/round/getbets`, { headers: baboonHeaders });
+      if (response.status === 200) {
+        setUserBets(response.data.bets.Items);
+        AsyncStorage.setItem('userBets', JSON.stringify(response.data.bets.Items));
+      }
+      return response.data.bets.Items;
+    },
+  };
+
   return (
     <DataContext.Provider
         // eslint-disable-next-line
@@ -269,9 +290,12 @@ export function DataProviderContext({ children }) {
         userId,
         userBags,
         userDiscs,
+        userRounds,
+        userBets,
         ...authFunctions,
         ...bagFunctions,
         ...discFunctions,
+        ...roundFunctions,
       }}
     >
       {children}

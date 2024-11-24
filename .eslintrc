@@ -29,6 +29,7 @@
     "react-native/no-color-literals": "off",
     "react/prop-types": "off",
     "max-len": "off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "react-hooks/exhaustive-deps": "off"
   }
 }

@@ -113,17 +113,19 @@ export default function Baboonview() {
               <Line x1="0" y1={height * 0.72 - 1} x2={width} y2={height * 0.72 - 1} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="2,20" />
               <Line x1={width / 2} y1="0" x2={width / 2} y2={height * 0.72} stroke={theme.colors.gray} strokeWidth="1" strokeDasharray="2,20" />
               {[1, 3, 5, 7, 9, 11, 13, 15].map((i) => (
-                  <SvgText
-                      key={i}
-                      x={width / 2} // Set x coordinate to the middle of the x-axis
-                      y={height * 0.72 - (i * (height * 0.72 / 15))}
-                      fontSize="14"
-                      fill={theme.colors.font}
-                      textAnchor="middle" // Center the text horizontally
-                      opacity="0.5"
-                  >
-                    {i}
-                  </SvgText>
+                <SvgText
+                  key={i}
+                    // eslint-disable-next-line no-mixed-operators
+                  x={width / 2} // Set x coordinate to the middle of the x-axis
+                    // eslint-disable-next-line no-mixed-operators
+                  y={(height * 0.72) - (i * (height * 0.72 / 15))}
+                  fontSize="14"
+                  fill={theme.colors.font}
+                  textAnchor="middle" // Center the text horizontally
+                  opacity="0.5"
+                >
+                  {i}
+                </SvgText>
               ))}
 
               {Object.entries(groupedDiscs).map(([key, discs]) => {
