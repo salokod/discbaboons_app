@@ -201,6 +201,13 @@ export function DataProviderContext({ children }) {
       }
       return response;
     },
+    editBagFunc: async (payload) => {
+      const response = await axios.post(`${HOSTNAME}/api/v2/protected/bag/editbag`, payload, { headers: baboonHeaders });
+      if (response.status === 200) {
+        await bagFunctions.findAllBags();
+      }
+      return response;
+    },
   };
 
   const discFunctions = {
