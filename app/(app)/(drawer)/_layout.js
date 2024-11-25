@@ -13,6 +13,7 @@ import {
 } from '@rneui/themed';
 import { StatusBar } from 'expo-status-bar';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 import { DataContext } from '../../../context/DataContext';
 import spiroLogoOutline from '../../../assets/spiro_logo_outline.png';
 
@@ -112,6 +113,20 @@ function CustomDrawerContent(props) {
 
       />
       <DrawerItem
+          // eslint-disable-next-line max-len
+          // eslint-disable-next-line react-native/no-color-literals, react/no-unstable-nested-components, max-len
+        icon={({ size }) => <MaterialCommunityIcons name="bag-personal-outline" size={size} color={pathname === '/managebags' ? '#fff' : '#000'} />}
+        label="Manage Bags"
+          // eslint-disable-next-line react-native/no-color-literals
+        labelStyle={[styles.navItemLabel, { color: pathname === '/managebags' ? '#fff' : '#000' }]}
+          // eslint-disable-next-line react-native/no-color-literals
+        style={{ backgroundColor: pathname === '/managebags' ? '#333' : '#fff' }}
+        onPress={() => {
+          router.push('/managebags');
+        }}
+
+      />
+      <DrawerItem
           // eslint-disable-next-line react/no-unstable-nested-components
         icon={({ size }) => <Ionicons name="settings-outline" size={size} color={pathname === '/settings' ? '#fff' : '#000'} />}
         label="Settings"
@@ -180,6 +195,21 @@ export default function Layout() {
       />
       <Drawer.Screen
         name="settings"
+        options={{
+          headerShown: true,
+          // eslint-disable-next-line react/no-unstable-nested-components
+          headerTitle: () => (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={spiroLogoOutline}
+                style={{ width: 35, height: 35 }}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="managebags"
         options={{
           headerShown: true,
           // eslint-disable-next-line react/no-unstable-nested-components

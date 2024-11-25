@@ -60,7 +60,12 @@ export default function _layout() {
               Rounds
             </Text>
           ),
-          headerTitle: 'Rounds',
+          headerTitle: () => (
+            <Image
+              source={spiroLogoOutline} // Use the imported image
+              style={{ width: 35, height: 35 }}
+            />
+          ),
         }}
       />
     </Tabs>
