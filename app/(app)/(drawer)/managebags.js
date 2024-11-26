@@ -11,17 +11,25 @@ import BagColorPicker from '../../../components/bag/BagColorPicker';
 import BagNameInput from '../../../components/bag/BagNameInput';
 
 export default function Page() {
-  const { userBags, userDiscs, editBagFunc } = useContext(DataContext);
+  const {
+    userBags, userDiscs, editBagFunc, deleteBagFunc,
+  } = useContext(DataContext);
   const { showSnackBar } = useSnackBar();
   const { theme } = useTheme();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedBag, setSelectedBag] = useState(null);
 
   const getActiveDiscsCountByBagId = (bagId) => userDiscs.filter((disc) => disc.bagId === bagId && disc.discStatus === 'active').length;
 
   const handleEdit = (bag) => {
     setSelectedBag(bag);
-    setModalVisible(true);
+    setEditModalVisible(true);
+  };
+
+  const handleDelete = (bag) => {
+    setSelectedBag(bag);
+    setDeleteModalVisible(true);
   };
 
   const handleColorSelect = (color) => {
@@ -48,16 +56,49 @@ export default function Page() {
       };
       await editBagFunc(payload);
       showSnackBar('Bag updated', 'success');
-      setModalVisible(false);
+      setEditModalVisible(false);
       setSelectedBag(null);
     } catch (error) {
       showSnackBar('Bag update failed', 'success');
     }
   };
 
+  const handleDeleteBag = async () => {
+    try {
+      const payload = {
+        bagId: selectedBag.baboontype,
+      };
+      await deleteBagFunc(payload);
+      showSnackBar('Bag deleted', 'success');
+      setDeleteModalVisible(false);
+      setSelectedBag(null);
+    } catch (error) {
+      showSnackBar('Bag delete failed', 'success');
+    }
+  };
+
+  const handleEditBagClose = () => {
+    setEditModalVisible(false);
+    setSelectedBag(null);
+  };
+  const handleDeleteBagClose = () => {
+    setDeleteModalVisible(false);
+    setSelectedBag(null);
+  };
+
   return (
     <>
       <TopBarLabel title="Manage Bags" />
+      <View style={{
+        flexDirection: 'row', justifyContent: 'center', backgroundColor: theme.colors.background, paddingTop: 20,
+      }}
+      >
+        <Button
+          title="Add New Bag"
+          icon={<MaterialCommunityIcons name="plus" size={20} color="white" />}
+          onPress={() => { setEditModalVisible(true); }}
+        />
+      </View>
       <ScrollView style={{ backgroundColor: theme.colors.background, paddingTop: 10 }}>
         <View style={{ flex: 1, alignItems: 'center', backgroundColor: theme.colors.background }}>
           {userBags.map((bag) => (
@@ -66,6 +107,7 @@ export default function Page() {
                 <MaterialCommunityIcons name="bag-personal" size={30} color={bag.bagColor} />
 
                 <ListItem.Content style={{ flexDirection: 'column', width: '100%', marginLeft: 5 }}>
+
                   <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
                     {bag.isPrimary && <MaterialCommunityIcons name="star" size={20} color={theme.colors.font} style={{ marginRight: 5 }} />}
                     <View style={{ flex: 1 }}>
@@ -75,8 +117,8 @@ export default function Page() {
                       </Text>
                     </View>
                     <View style={{ flexDirection: 'row', gap: 15 }}>
-                      <Button title="Edit" onPress={() => handleEdit(bag)} />
-                      <Button title="Delete" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => {}} />
+                      <Button title="Edit" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => handleEdit(bag)} />
+                      <Button title="Delete" buttonStyle={{ backgroundColor: 'red' }} onPress={() => handleDelete(bag)} />
                     </View>
                   </View>
                 </ListItem.Content>
@@ -100,8 +142,8 @@ export default function Page() {
       <Modal
         animationType="slide"
         transparent
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        visible={editModalVisible}
+        onRequestClose={() => handleEditBagClose()}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -109,17 +151,52 @@ export default function Page() {
             <BagNameInput theme={theme} bagName={selectedBag?.bagName} setBagName={handleNameChange} />
             <BagColorPicker theme={theme} bagColor={selectedBag?.bagColor} onSelectColor={handleColorSelect} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
-              <Button title="Cancel" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => setModalVisible(false)} />
-              <Button title="Save Changes" onPress={() => handleEditBag(selectedBag)} />
+              <Button title="Cancel" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => handleEditBagClose()} />
+              <Button title="Save" onPress={() => handleEditBag(selectedBag)} />
             </View>
           </View>
         </View>
       </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent
+        visible={deleteModalVisible}
+        onRequestClose={() => handleDeleteBagClose()}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Delete Bag</Text>
+            <Text style={styles.mainBodyTitle}>You sure you want to delete this bag:</Text>
+            <Text style={styles.mainBodyText}>{selectedBag?.bagName}</Text>
+            <Text style={styles.disclaimer}>You can not undo this, you baboon...</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
+              <Button title="Cancel" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => handleDeleteBagClose()} />
+              <Button title="Delete" onPress={() => handleDeleteBag(selectedBag)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  disclaimer: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginBottom: 20,
+  },
+  mainBodyText: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 50,
+  },
+  mainBodyTitle: {
+    fontSize: 14,
+    fontWeight: 'normal',
+  },
   modalContainer: {
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

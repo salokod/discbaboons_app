@@ -208,6 +208,13 @@ export function DataProviderContext({ children }) {
       }
       return response;
     },
+    deleteBagFunc: async (payload) => {
+      const response = await axios.post(`${HOSTNAME}/api/v2/protected/bag/deletebag`, payload, { headers: baboonHeaders });
+      if (response.status === 200) {
+        await bagFunctions.findAllBags();
+      }
+      return response;
+    },
   };
 
   const discFunctions = {
