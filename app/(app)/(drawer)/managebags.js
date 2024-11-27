@@ -12,7 +12,7 @@ import BagNameInput from '../../../components/bag/BagNameInput';
 
 export default function Page() {
   const {
-    userBags, userDiscs, editBagFunc, deleteBagFunc,
+    userBags, userDiscs, editBagFunc, deleteBagFunc, sendDiscsToBag,
   } = useContext(DataContext);
   const { showSnackBar } = useSnackBar();
   const { theme } = useTheme();
@@ -21,6 +21,10 @@ export default function Page() {
   const [selectedBag, setSelectedBag] = useState(null);
 
   const getActiveDiscsCountByBagId = (bagId) => userDiscs.filter((disc) => disc.bagId === bagId && disc.discStatus === 'active').length;
+
+  const getDiscsPayloadByBagId = (bagId) => userDiscs
+    .filter((disc) => disc.bagId === bagId)
+    .map((disc) => ({ baboontype: disc.baboontype }));
 
   const handleEdit = (bag) => {
     setSelectedBag(bag);
@@ -74,6 +78,16 @@ export default function Page() {
       setSelectedBag(null);
     } catch (error) {
       showSnackBar('Bag delete failed', 'success');
+    }
+  };
+
+  const sendDiscsToNewBag = async (newBagId) => {
+    try {
+      await sendDiscsToBag(newBagId, getDiscsPayloadByBagId(selectedBag.baboontype));
+      showSnackBar('Discs moved to new bag', 'success');
+      setSelectedBag(null);
+    } catch (error) {
+      showSnackBar('Discs failed to move to new bag', 'success');
     }
   };
 
@@ -164,18 +178,38 @@ export default function Page() {
         visible={deleteModalVisible}
         onRequestClose={() => handleDeleteBagClose()}
       >
-        <View style={styles.modalContainer}>
+        <ScrollView contentContainerStyle={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Delete Bag</Text>
             <Text style={styles.mainBodyTitle}>You sure you want to delete this bag:</Text>
             <Text style={styles.mainBodyText}>{selectedBag?.bagName}</Text>
-            <Text style={styles.disclaimer}>You can not undo this, you baboon...</Text>
+            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+              {getDiscsPayloadByBagId(selectedBag?.baboontype).length > 0
+                  && (<Text style={styles.mainBodyTitle}>Before deleting, you must move your discs to another bag, you baboon:</Text>)}
+              {getDiscsPayloadByBagId(selectedBag?.baboontype).length > 0 && userBags.filter((bag) => bag.baboontype !== selectedBag?.baboontype).map((bag) => (
+                <Button
+                  key={bag.baboontype}
+                  title={bag.bagName}
+                  type="outline"
+                  buttonStyle={{ borderColor: theme.colors.secondaryButton, borderWidth: 0.5 }}
+                  containerStyle={{ marginVertical: 5 }}
+                  titleStyle={{ color: theme.colors.secondaryButton }}
+                  onPress={() => {
+                    // Handle moving discs to this bag
+                    sendDiscsToNewBag(bag.baboontype);
+                  }}
+                />
+              ))}
+            </View>
+            {getDiscsPayloadByBagId(selectedBag?.baboontype).length > 0
+              ? <Text style={styles.disclaimer}>You can&#39;t delete bag until you move these discs, you baboon</Text>
+              : <Text style={styles.disclaimer}>You can not undo this, you baboon...</Text>}
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
               <Button title="Cancel" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => handleDeleteBagClose()} />
-              <Button title="Delete" onPress={() => handleDeleteBag(selectedBag)} />
+              <Button title="Delete" onPress={() => handleDeleteBag(selectedBag)} disabled={getDiscsPayloadByBagId(selectedBag?.baboontype).length > 0} />
             </View>
           </View>
-        </View>
+        </ScrollView>
       </Modal>
 
     </>
@@ -184,18 +218,23 @@ export default function Page() {
 
 const styles = StyleSheet.create({
   disclaimer: {
+    alignItems: 'center',
     fontSize: 12,
     fontStyle: 'italic',
+    justifyContent: 'center',
     marginBottom: 20,
+    marginTop: 40,
+    textAlign: 'center',
   },
   mainBodyText: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: '500',
     marginBottom: 50,
   },
   mainBodyTitle: {
     fontSize: 14,
     fontWeight: 'normal',
+    textAlign: 'center',
   },
   modalContainer: {
     alignItems: 'center',
