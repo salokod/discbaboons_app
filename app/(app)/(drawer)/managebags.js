@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View, Text, ScrollView, Modal, StyleSheet,
 } from 'react-native';
@@ -9,16 +9,25 @@ import { DataContext } from '../../../context/DataContext';
 import TopBarLabel from '../../../components/TopBarLabel';
 import BagColorPicker from '../../../components/bag/BagColorPicker';
 import BagNameInput from '../../../components/bag/BagNameInput';
+import IsPrimaryInput from '../../../components/bag/IsPrimaryInput';
 
 export default function Page() {
   const {
-    userBags, userDiscs, editBagFunc, deleteBagFunc, sendDiscsToBag,
+    userBags, userDiscs, editBagFunc, deleteBagFunc, sendDiscsToBag, addBagFunc,
   } = useContext(DataContext);
   const { showSnackBar } = useSnackBar();
   const { theme } = useTheme();
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedBag, setSelectedBag] = useState(null);
+  const [isPrimary, setIsPrimary] = useState(false);
+
+  useEffect(() => {
+    if (selectedBag) {
+      setIsPrimary(selectedBag.isPrimary);
+    }
+  }, [selectedBag]);
 
   const getActiveDiscsCountByBagId = (bagId) => userDiscs.filter((disc) => disc.bagId === bagId && disc.discStatus === 'active').length;
 
@@ -50,13 +59,29 @@ export default function Page() {
     }));
   };
 
-  const handleEditBag = async () => {
+  const handleAddBag = async () => {
+    try {
+      const payload = {
+        bagName: selectedBag.bagName,
+        bagColor: selectedBag.bagColor,
+        isPrimary,
+      };
+      await addBagFunc(payload);
+      showSnackBar('Bag created', 'success');
+      setAddModalVisible(false);
+      setSelectedBag(null);
+    } catch (error) {
+      showSnackBar('Bag update failed', 'success');
+    }
+  };
+
+  const handleEditBagSubmit = async () => {
     try {
       const payload = {
         bagId: selectedBag.baboontype,
         bagName: selectedBag.bagName,
         bagColor: selectedBag.bagColor,
-        isPrimary: selectedBag.isPrimary,
+        isPrimary,
       };
       await editBagFunc(payload);
       showSnackBar('Bag updated', 'success');
@@ -85,7 +110,7 @@ export default function Page() {
     try {
       await sendDiscsToBag(newBagId, getDiscsPayloadByBagId(selectedBag.baboontype));
       showSnackBar('Discs moved to new bag', 'success');
-      setSelectedBag(null);
+      // setSelectedBag(null);
     } catch (error) {
       showSnackBar('Discs failed to move to new bag', 'success');
     }
@@ -94,6 +119,13 @@ export default function Page() {
   const handleEditBagClose = () => {
     setEditModalVisible(false);
     setSelectedBag(null);
+    setIsPrimary(false);
+  };
+
+  const handleAddBagClose = () => {
+    setAddModalVisible(false);
+    setSelectedBag(null);
+    setIsPrimary(false);
   };
   const handleDeleteBagClose = () => {
     setDeleteModalVisible(false);
@@ -110,7 +142,7 @@ export default function Page() {
         <Button
           title="Add New Bag"
           icon={<MaterialCommunityIcons name="plus" size={20} color="white" />}
-          onPress={() => { setEditModalVisible(true); }}
+          onPress={() => { setAddModalVisible(true); }}
         />
       </View>
       <ScrollView style={{ backgroundColor: theme.colors.background, paddingTop: 10 }}>
@@ -153,6 +185,29 @@ export default function Page() {
         </View>
       </ScrollView>
 
+      {addModalVisible && (
+      <Modal
+        animationType="slide"
+        transparent
+        visible={addModalVisible}
+        onRequestClose={() => handleAddBagClose()}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add Bag</Text>
+            <BagNameInput theme={theme} bagName={selectedBag?.bagName} setBagName={handleNameChange} />
+            <BagColorPicker theme={theme} bagColor={selectedBag?.bagColor} onSelectColor={handleColorSelect} />
+            <IsPrimaryInput theme={theme} isPrimary={isPrimary} setIsPrimary={setIsPrimary} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
+              <Button title="Cancel" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => handleAddBagClose()} />
+              <Button title="Save" onPress={() => handleAddBag(selectedBag)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      )}
+
+      {editModalVisible && (
       <Modal
         animationType="slide"
         transparent
@@ -164,14 +219,17 @@ export default function Page() {
             <Text style={styles.modalTitle}>Edit Bag</Text>
             <BagNameInput theme={theme} bagName={selectedBag?.bagName} setBagName={handleNameChange} />
             <BagColorPicker theme={theme} bagColor={selectedBag?.bagColor} onSelectColor={handleColorSelect} />
+            <IsPrimaryInput theme={theme} isPrimary={isPrimary} setIsPrimary={setIsPrimary} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
               <Button title="Cancel" buttonStyle={{ backgroundColor: theme.colors.secondary }} onPress={() => handleEditBagClose()} />
-              <Button title="Save" onPress={() => handleEditBag(selectedBag)} />
+              <Button title="Save" onPress={() => handleEditBagSubmit(selectedBag)} />
             </View>
           </View>
         </View>
       </Modal>
+      )}
 
+      {deleteModalVisible && (
       <Modal
         animationType="slide"
         transparent
@@ -185,7 +243,7 @@ export default function Page() {
             <Text style={styles.mainBodyText}>{selectedBag?.bagName}</Text>
             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
               {getDiscsPayloadByBagId(selectedBag?.baboontype).length > 0
-                  && (<Text style={styles.mainBodyTitle}>Before deleting, you must move your discs to another bag, you baboon:</Text>)}
+                && (<Text style={styles.mainBodyTitle}>Before deleting, you must move your discs to another bag, you baboon:</Text>)}
               {getDiscsPayloadByBagId(selectedBag?.baboontype).length > 0 && userBags.filter((bag) => bag.baboontype !== selectedBag?.baboontype).map((bag) => (
                 <Button
                   key={bag.baboontype}
@@ -211,6 +269,7 @@ export default function Page() {
           </View>
         </ScrollView>
       </Modal>
+      )}
 
     </>
   );
@@ -230,6 +289,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '500',
     marginBottom: 50,
+    textAlign: 'center',
   },
   mainBodyTitle: {
     fontSize: 14,
@@ -243,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalContent: {
-    alignItems: 'center',
+    // alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,

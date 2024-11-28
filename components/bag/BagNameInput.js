@@ -5,7 +5,7 @@ import { Input, Icon } from '@rneui/themed';
 function BagNameInput({ theme, bagName, setBagName }) {
   return (
     <Input
-      containerStyle={{ marginVertical: 4 }}
+      containerStyle={{ marginVertical: 4, marginBottom: -10 }}
       errorStyle={{}}
       errorProps={{}}
       labelStyle={{ color: theme.colors.gray }}
