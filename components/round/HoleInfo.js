@@ -39,12 +39,12 @@ function HoleInfo({
       setTimeout(() => {
         setModalVisible(false);
         setModalMessage('');
-      }, 2000);
+      }, 1000);
     } catch (e) {
       setModalMessage('Failed updating round, try again baboon');
       setTimeout(() => {
         setModalMessage('');
-      }, 2000);
+      }, 1000);
     }
   };
 

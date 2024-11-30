@@ -3,6 +3,7 @@ import { Text } from '@rneui/themed';
 import { View, TouchableOpacity, ScrollView } from 'react-native';
 import RoundHeader from './RoundHeader';
 import HoleInfo from './HoleInfo';
+import ScoreInfo from './ScoreInfo';
 
 function PendingRound({
   theme, round, bets, uuid,
@@ -40,6 +41,7 @@ function PendingRound({
         }}
         >
           <HoleInfo theme={theme} hole={round.holeData[selectedHole - 1]} selectedHole={selectedHole} round={round} />
+          <ScoreInfo round={round} theme={theme} selectedHole={selectedHole} hole={round.holeData[selectedHole - 1]} />
         </View>
       </View>
     </View>
