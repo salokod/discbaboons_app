@@ -147,6 +147,7 @@ export default function Page() {
         },
       ]}
       key={item.baboontype}
+      onPress={() => handleCheck(item)}
     >
       <ListItem.CheckBox
           // Use ThemeProvider to change the defaults of the checkbox
@@ -161,7 +162,7 @@ export default function Page() {
         checkedColor={item.discColor}
         size={30}
         checked={checked[item.baboontype] || false}
-        onPress={() => handleCheck(item)}
+        // onPress={() => handleCheck(item)}
       />
       <ListItem.Content style={{ flexDirection: 'row', width: '100%' }}>
         <View style={{ flex: 0.4 }}>

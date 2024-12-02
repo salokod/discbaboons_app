@@ -56,6 +56,7 @@ function HoleScore({
   const handleScoreChange = (baboonId, score, isIncrement) => {
     let newScore = score;
     if (newScore < 0) newScore = 0;
+    if (newScore > 20) newScore = 20;
     if (scores[baboonId] === 0) {
       newScore = isIncrement ? hole.par : hole.par - 1;
     }
@@ -73,7 +74,7 @@ function HoleScore({
         <Text style={{ fontSize: 17 }}>{round.baboonUsername}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
-            onPress={() => handleScoreChange(round.baboonid, scores[round.baboonid] - 1, false)}
+            onPress={() => handleScoreChange(round.baboonid, Number(scores[round.baboonid]) - 1, false)}
             style={{
               padding: 10,
               backgroundColor: theme.colors.primaryButton,
@@ -87,7 +88,7 @@ function HoleScore({
             <Text style={{ fontSize: 20 }}>{scores[round.baboonid]}</Text>
           </View>
           <TouchableOpacity
-            onPress={() => handleScoreChange(round.baboonid, scores[round.baboonid] + 1, true)}
+            onPress={() => handleScoreChange(round.baboonid, Number(scores[round.baboonid]) + 1, true)}
             style={{
               padding: 10,
               backgroundColor: theme.colors.primaryButton,
@@ -109,7 +110,7 @@ function HoleScore({
           <Text style={{ fontSize: 17 }}>{baboon.baboonFriendUsername}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
-              onPress={() => handleScoreChange(baboon.baboonFriendId, scores[baboon.baboonFriendId] - 1, false)}
+              onPress={() => handleScoreChange(baboon.baboonFriendId, Number(scores[baboon.baboonFriendId]) - 1, false)}
               style={{
                 padding: 10,
                 backgroundColor: theme.colors.primaryButton,
@@ -123,7 +124,7 @@ function HoleScore({
               <Text style={{ fontSize: 20 }}>{scores[baboon.baboonFriendId]}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => handleScoreChange(baboon.baboonFriendId, scores[baboon.baboonFriendId] + 1, true)}
+              onPress={() => handleScoreChange(baboon.baboonFriendId, Number(scores[baboon.baboonFriendId]) + 1, true)}
               style={{
                 padding: 10,
                 backgroundColor: theme.colors.primaryButton,
