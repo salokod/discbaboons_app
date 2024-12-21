@@ -20,12 +20,8 @@ export default function Page() {
   const bets = userBets.find((r) => r.baboontype === `#baboonbet-${uuid}`);
 
   return (
-    <>
-      {
-        round.roundStatus === 'pending'
-          ? <PendingRound round={round} bets={bets} theme={theme} uuid={uuid} />
-          : <CompletedRound round={round} bets={bets} theme={theme} uuid={uuid} />
-      }
-    </>
+    round.roundStatus === 'pending'
+      ? <PendingRound round={round} bets={bets} theme={theme} uuid={uuid} />
+      : <CompletedRound round={round} bets={bets} theme={theme} uuid={uuid} />
   );
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, Button } from '@rneui/themed';
+import { Text, Button, Icon } from '@rneui/themed';
 import {
   View, TouchableOpacity, Modal, TextInput,
 } from 'react-native';
@@ -66,6 +66,13 @@ function HoleInfo({
           marginLeft: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
         }}
         >
+          <Icon
+            name="edit"
+            type="antdesign"
+            color={theme.colors.font}
+            containerStyle={{ position: 'absolute', left: 0 }}
+            size={20}
+          />
           <View style={{ alignItems: 'center', marginRight: 20 }}>
             <Text style={{
               color: theme.colors.font, fontWeight: 'bold', fontSize: 20,
