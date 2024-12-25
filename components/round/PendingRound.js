@@ -8,6 +8,7 @@ import RoundHeader from './RoundHeader';
 import HoleInfo from './HoleInfo';
 import ScoreInfo from './ScoreInfo';
 import BaboonBetsBottomSheet from './BaboonBetsBottomSheet';
+import skinCalc from '../../utils/skinCalc';
 
 function PendingRound({
   theme, round, bets,
@@ -23,6 +24,8 @@ function PendingRound({
       scrollViewRef.current.scrollTo({ y: scrollPosition, animated: true });
     }
   }, [selectedHole]);
+
+  const skinShit = skinCalc(round, bets);
 
   return (
     <View style={{ flex: 1, width: '100%', backgroundColor: theme.colors.mainBackgroundColor }}>
@@ -71,6 +74,7 @@ function PendingRound({
               setIsVisible={setIsVisible}
               bets={bets}
               theme={theme}
+              skinShit={skinShit}
             />
           )}
         </View>

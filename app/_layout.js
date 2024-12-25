@@ -17,6 +17,7 @@ const theme = createTheme({
     highlightedColor: '#c0c0c0',
     baseColor: 'white',
     gray: '#808080',
+    baboonBetBackground: '#d2d2d2',
   },
   darkColors: {
     primary: '#36399a',
@@ -30,6 +31,7 @@ const theme = createTheme({
     highlightedColor: '#2f2f2f',
     baseColor: 'black',
     gray: '#808080',
+    baboonBetBackground: '#d2d2d2',
   },
   components: {
     Button: {

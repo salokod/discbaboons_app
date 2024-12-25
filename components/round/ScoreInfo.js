@@ -47,7 +47,7 @@ function HoleScore({
     await updateRoundFunc(payload);
   };
 
-  const debouncedUpdateScoreOnServer = useCallback(debounce(updateScoreOnServer, 2000), [selectedHole]);
+  const debouncedUpdateScoreOnServer = useCallback(debounce(updateScoreOnServer, 500), [selectedHole]);
 
   const handleScoreChange = (baboonId, score, isIncrement) => {
     let newScore = score;

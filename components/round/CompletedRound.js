@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import RoundHeader from './RoundHeader';
 
 function CompletedRound({
-  theme, round, bets, uuid,
+  theme, round,
 }) {
   return (
     <View style={{
