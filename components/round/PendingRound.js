@@ -63,9 +63,10 @@ function PendingRound({
           <ScoreInfo round={round} theme={theme} selectedHole={selectedHole} hole={round.holeData[selectedHole - 1]} setSelectedHole={setSelectedHole} />
           {bets && (
             <Button
-              title="Show Bets"
+              title="Baboon Bets"
               onPress={() => setIsVisible(true)}
-              buttonStyle={{ margin: 10 }}
+              containerStyle={{ alignSelf: 'center', marginTop: 10, width: '70%' }}
+              buttonStyle={{ backgroundColor: theme.colors.secondaryButton }}
             />
           )}
           {bets && (

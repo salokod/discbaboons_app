@@ -33,7 +33,7 @@ function BaboonBetsBottomSheet({
         }}
         >
           <Text style={{
-            flex: 1, textAlign: 'center', fontSize: 18, color: 'black',
+            flex: 1, textAlign: 'center', fontSize: 20, color: 'black',
           }}
           >
             Baboon Bets
@@ -45,16 +45,18 @@ function BaboonBetsBottomSheet({
             onPress={() => setIsVisible(false)}
           />
         </View>
-        <ScrollView>
-          {bets && bets.gamesPlayed.map((game, index) => (
-            <View key={index} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: theme.colors.gray }}>
-              {game.game === 'skins' ? (
-                <SkinsComponent consolidatedBaboons={consolidatedBaboons} skinShit={skinShit} skinAmount={bets.skinsAmount} />
-              ) : (
-                <SideBetComponent game={game} theme={theme} consolidatedBaboons={consolidatedBaboons} />
-              )}
-            </View>
-          ))}
+        <ScrollView style={{ marginBottom: 50 }}>
+          {bets && bets.gamesPlayed
+            .sort((a) => (a.game === 'skins' ? -1 : 1))
+            .map((game) => (
+              <View key={`${Math.random()}`} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: theme.colors.gray }}>
+                {game.game === 'skins' ? (
+                  <SkinsComponent consolidatedBaboons={consolidatedBaboons} skinShit={skinShit} skinAmount={bets.skinsAmount} />
+                ) : (
+                  <SideBetComponent game={game} theme={theme} consolidatedBaboons={consolidatedBaboons} />
+                )}
+              </View>
+            ))}
         </ScrollView>
       </View>
     </BottomSheet>
