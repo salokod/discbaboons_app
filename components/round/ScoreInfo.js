@@ -32,6 +32,37 @@ function HoleScore({
     };
   };
 
+  function compileScoreInfo(holeData) {
+    const scoreInfo = {};
+    const parSums = {};
+
+    holeData.forEach((hole) => {
+      Object.keys(hole).forEach((key) => {
+        if (key !== 'distance' && key !== 'holeNumber' && key !== 'par') {
+          const scoreKey = `${key}_score`;
+          const scoreValue = hole[key];
+          scoreInfo[scoreKey] = (scoreInfo[scoreKey] || 0) + (typeof scoreValue === 'string' ? parseInt(scoreValue, 10) : scoreValue);
+
+          if (!parSums[key]) {
+            parSums[key] = 0;
+          }
+          if (scoreValue > 0) {
+            parSums[key] += parseInt(hole.par, 10);
+          }
+        }
+      });
+    });
+
+    Object.keys(parSums).forEach((key) => {
+      const parKey = `${key}_par`;
+      scoreInfo[parKey] = parSums[key];
+    });
+
+    scoreInfo.roundPar = holeData.reduce((acc, hole) => acc + parseInt(hole.par, 10), 0);
+
+    return scoreInfo;
+  }
+
   const updateScoreOnServer = async (newScores) => {
     const updatedRound = { ...round };
     Object.keys(newScores).forEach((baboonId) => {
@@ -42,8 +73,10 @@ function HoleScore({
       otherBaboons: updatedRound.otherBaboons,
       baboontype: updatedRound.baboontype,
       holeData: updatedRound.holeData,
-      scoreInfo: updatedRound.scoreInfo,
+      scoreInfo: compileScoreInfo(updatedRound.holeData, updatedRound.otherBaboons),
     };
+
+    // console.log('this be payload', payload);
     await updateRoundFunc(payload);
   };
 

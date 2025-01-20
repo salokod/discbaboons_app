@@ -11,12 +11,13 @@ import { DataContext } from '../../../../../context/DataContext';
 
 export default function Page() {
   const {
-    getRounds, getBets,
+    getRounds, getBets, userRounds, userBets,
   } = useContext(DataContext);
   const { showSnackBar } = useSnackBar();
   const { theme } = useTheme();
 
   const [combinedData, setCombinedData] = useState([]);
+  const [combinedData2, setCombinedData2] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [expandedRound, setExpandedRound] = useState(null);
 
@@ -82,6 +83,12 @@ export default function Page() {
     getRoundsAndData();
   }, []);
 
+  useEffect(() => {
+    // console.log('this ran')
+    const getCombineData2 = getCombinedData(userBets, userRounds);
+    setCombinedData2(getCombineData2);
+  }, [userBets, userRounds]);
+
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -121,6 +128,8 @@ export default function Page() {
     };
   });
 
+  // console.log('userRounds', userRounds);
+
   return (
     <ScrollView
       refreshControl={(
@@ -135,7 +144,7 @@ export default function Page() {
       style={styles.container}
     >
       <View style={styles.container}>
-        {combinedData.map((round) => (
+        {combinedData2.map((round) => (
           <ListItem
             bottomDivider
             containerStyle={[
@@ -179,9 +188,9 @@ export default function Page() {
                         {round.betData ? `${isNaN(round.betData[`${round.baboonid}_money`]) ? '--' : `${round.betData[`${round.baboonid}_money`] < 0 ? '-' : ''}$${Math.abs(round.betData[`${round.baboonid}_money`]).toFixed(2)}`}` : '--'}
                       </Text>
                       <Text style={styles.scoreBox} numberOfLines={1}>
-                        {Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) === 0
+                        {round.scoreInfo && Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) === 0
                           ? <Text style={{ fontSize: 15 }}>Even</Text>
-                          : `${Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) > 0 ? '+' : ''}${Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`])}`}
+                          : `${round.scoreInfo && Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`]) > 0 ? '+' : ''}${round.scoreInfo && Number(round.scoreInfo[`${round.baboonid}_score`]) - Number(round.scoreInfo[`${round.baboonid}_par`])}`}
                       </Text>
                     </View>
 

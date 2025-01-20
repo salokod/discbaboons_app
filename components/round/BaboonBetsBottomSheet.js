@@ -8,7 +8,7 @@ import SideBetComponent from './bets/SideBetComponent';
 const screenHeight = Dimensions.get('window').height;
 
 function BaboonBetsBottomSheet({
-  isVisible, setIsVisible, bets, theme, skinShit,
+  isVisible, setIsVisible, bets, theme, skinShit, showSnackBar,
 }) {
   const consolidatedBaboons = [
     {
@@ -53,7 +53,7 @@ function BaboonBetsBottomSheet({
                 {game.game === 'skins' ? (
                   <SkinsComponent consolidatedBaboons={consolidatedBaboons} skinShit={skinShit} skinAmount={bets.skinsAmount} />
                 ) : (
-                  <SideBetComponent game={game} theme={theme} consolidatedBaboons={consolidatedBaboons} />
+                  <SideBetComponent game={game} theme={theme} consolidatedBaboons={consolidatedBaboons} bets={bets} showSnackBar={showSnackBar} />
                 )}
               </View>
             ))}

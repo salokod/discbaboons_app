@@ -11,7 +11,7 @@ import BaboonBetsBottomSheet from './BaboonBetsBottomSheet';
 import skinCalc from '../../utils/skinCalc';
 
 function PendingRound({
-  theme, round, bets,
+  theme, round, bets, showSnackBar,
 }) {
   const [selectedHole, setSelectedHole] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
@@ -25,8 +25,8 @@ function PendingRound({
     }
   }, [selectedHole]);
 
-  const skinShit = skinCalc(round, bets);
-
+  // console.log('bets',bets)
+  const skinShit = bets?.gamesPlayed?.some((game) => game.game === 'skins') ? skinCalc(round, bets) : null;
   return (
     <View style={{ flex: 1, width: '100%', backgroundColor: theme.colors.mainBackgroundColor }}>
       <View style={{ width: '100%' }}>
@@ -76,6 +76,7 @@ function PendingRound({
               bets={bets}
               theme={theme}
               skinShit={skinShit}
+              showSnackBar={showSnackBar}
             />
           )}
         </View>

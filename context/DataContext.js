@@ -292,11 +292,26 @@ export function DataProviderContext({ children }) {
       return response.data.bets.Items;
     },
     updateRoundFunc: async (payload) => {
+      console.log('this is the payload to update', payload);
       const response = await axios.post(`${HOSTNAME}/api/v2/protected/round/updateround`, payload, { headers: baboonHeaders });
       if (response.status === 200) {
         await roundFunctions.getRounds();
       }
       return response;
+    },
+    updateRoundBetsFunc: async (payload) => {
+      try {
+        // console.log('updateRoundBetsFunc payload', payload);
+        const response = await axios.post(`${HOSTNAME}/api/v2/protected/round/updateroundbets`, payload, { headers: baboonHeaders });
+        // console.log('response', response);
+        if (response.status === 200) {
+          await roundFunctions.getRounds();
+          await roundFunctions.getBets();
+        }
+        return response;
+      } catch (error) {
+        console.log('error', error.response);
+      }
     },
   };
 

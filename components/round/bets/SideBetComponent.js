@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text } from 'react-native';
 import { Button, ListItem } from '@rneui/themed';
+import { DataContext } from '../../../context/DataContext';
 
-function SideBetComponent({ game, theme }) {
+function SideBetComponent({
+  game, theme, bets, showSnackBar,
+}) {
+  const {
+    updateRoundBetsFunc,
+  } = useContext(DataContext);
+
   const { details } = game;
 
   // Separate pending and active bets
@@ -37,6 +44,54 @@ function SideBetComponent({ game, theme }) {
   }
 
   const completedBetsTotals = calculateCompletedBetsTotalAndBaboons(completedBets);
+
+  async function handleBetPress(bet, baboon) {
+    bet.status = 'completed';
+    bet.winnerId = baboon.baboonId;
+    bet.winnerUsername = baboon.baboonUsername;
+
+    const consolidatedBetsData = consolidateBets(details);
+
+    const apiPayload = {
+      ...bets,
+      gamesPlayed: bets.gamesPlayed.map((game) => {
+        if (game.type === 'side') {
+          return { ...game, details: consolidatedBetsData };
+        }
+        return game;
+      }),
+    };
+
+    try {
+      await updateRoundBetsFunc(apiPayload);
+      showSnackBar('Bet submitted, you baboon...', 'success');
+    } catch {
+      showSnackBar('Bet failed to submit, try again...', 'error');
+    }
+  }
+
+  function consolidateBets(bets) {
+    return bets.map((bet) => {
+      const consolidatedBet = {
+        hole: bet.hole,
+        sideBetAmount: bet.sideBetAmount,
+        sideBetBaboons: bet.sideBetBaboons,
+        sideBetLabel: bet.sideBetLabel,
+        status: bet.status,
+        typeOfSideBet: bet.typeOfSideBet,
+      };
+
+      if (bet.status === 'completed') {
+        consolidatedBet.winnerId = bet.winnerId;
+        consolidatedBet.winnerUsername = bet.winnerUsername;
+      }
+
+      return consolidatedBet;
+    });
+  }
+
+  // const allBetsDetails = consolidateBets(details);
+  // console.log('All Bets Details:', allBetsDetails);
 
   return (
     <View>
@@ -115,7 +170,7 @@ function SideBetComponent({ game, theme }) {
                 <Button
                   key={baboon.baboonId}
                   title={baboon.baboonUsername}
-                  onPress={() => console.log(`Selected winner: ${baboon.baboonUsername}`)}
+                  onPress={() => handleBetPress(bet, baboon)}
                   containerStyle={{ marginBottom: 5 }}
                   buttonStyle={{ backgroundColor: theme.colors.primaryButton }}
                 />
