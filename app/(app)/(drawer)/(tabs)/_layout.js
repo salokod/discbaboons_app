@@ -66,6 +66,17 @@ export default function _layout() {
               style={{ width: 35, height: 35 }}
             />
           ),
+          headerRight: () => (
+            <Button radius="sm" type="clear" titleStyle={{ color: theme.theme.colors.font, fontSize: 14 }} onPress={() => console.log('fuckkkk')}>
+              <Text>Add</Text>
+              <Icon
+                name="add-circle"
+                type="ionicons"
+                style={{ marginLeft: 5 }}
+                color={theme.theme.colors.font}
+              />
+            </Button>
+          ),
         }}
       />
     </Tabs>

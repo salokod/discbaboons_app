@@ -122,68 +122,6 @@ function SideBetComponent({
         >
           Active Bets
         </Text>
-        {activeBets.map((bet, index) => (
-          <ListItem.Accordion
-            key={Math.floor(Math.random() * 100000).toString()}
-            content={(
-              <ListItem.Content>
-                <Text style={{ fontSize: 12, color: theme.colors.primary }}>
-                  {bet.typeOfSideBet === 'hole' ? `Hole ${bet.hole}` : 'Full Round'}
-                </Text>
-                <ListItem.Title style={{ fontWeight: 'bold', color: 'black' }}>
-                  <Text>
-                    {bet.sideBetLabel}
-                    {' '}
-                    - $
-                    {bet.sideBetAmount}
-                    {' '}
-                    / baboon
-                  </Text>
-                </ListItem.Title>
-              </ListItem.Content>
-                          )}
-            isExpanded={expanded[index]}
-            onPress={() => toggleExpand(index)}
-            containerStyle={{
-              backgroundColor: theme.colors.secondaryBackgroundColor,
-              borderWidth: 1,
-              borderColor: 'black',
-              elevation: 2,
-              marginBottom: 5,
-              borderBottomWidth: expanded[index] ? 0 : 1,
-            }}
-          >
-            <View style={{
-              padding: 10,
-              backgroundColor: theme.colors.secondaryBackgroundColor,
-              borderWidth: 1,
-              borderColor: 'black',
-              elevation: 2,
-              borderTopWidth: 0,
-              marginTop: -5, // Ensures the border connects seamlessly
-            }}
-            >
-              <Text style={{ fontSize: 13, color: 'black', marginBottom: 5 }}>
-                Choose the winner:
-              </Text>
-              {bet.sideBetBaboons.map((baboon) => (
-                <Button
-                  key={baboon.baboonId}
-                  title={baboon.baboonUsername}
-                  onPress={() => handleBetPress(bet, baboon)}
-                  containerStyle={{ marginBottom: 5 }}
-                  buttonStyle={{ backgroundColor: theme.colors.primaryButton }}
-                />
-              ))}
-              <Button
-                title="No Winner"
-                onPress={() => console.log('No winner selected')}
-                containerStyle={{ marginBottom: 5 }}
-                buttonStyle={{ backgroundColor: theme.colors.secondaryButton }}
-              />
-            </View>
-          </ListItem.Accordion>
-        ))}
       </View>
 
       <Text style={{

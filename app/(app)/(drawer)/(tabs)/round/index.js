@@ -108,14 +108,14 @@ export default function Page() {
     const roundUUID = round.baboontype.split('-')[1];
     const matchingBet = bets.find((bet) => bet.baboontype.split('-')[1] === roundUUID);
 
-    if (matchingBet) {
+    if (matchingBet && Array.isArray(matchingBet.gamesPlayed)) {
       const betData = matchingBet.gamesPlayed.reduce((acc, game) => {
         Object.entries(game.results).forEach(([key, value]) => {
           acc[key] = (acc[key] || 0) + value;
         });
         return acc;
       }, {});
-
+    
       return {
         ...round,
         betData,

@@ -292,7 +292,6 @@ export function DataProviderContext({ children }) {
       return response.data.bets.Items;
     },
     updateRoundFunc: async (payload) => {
-      console.log('this is the payload to update', payload);
       const response = await axios.post(`${HOSTNAME}/api/v2/protected/round/updateround`, payload, { headers: baboonHeaders });
       if (response.status === 200) {
         await roundFunctions.getRounds();
